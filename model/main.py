@@ -1,0 +1,102 @@
+#  https://github.com/pfnet-research/chainer-stylegan
+
+import os
+import sys
+import tqdm
+import numpy as np
+import chainer
+from chainer import Variable
+from PIL import Image
+from net import StyleGenerator, MappingNetwork
+from google.cloud import storage
+import tempfile
+
+storage_client = storage.Client()
+bucket = storage_client.bucket("facegen-fc9de.appspot.com")
+
+files = ["SmoothedGenerator_405000.npz", "SmoothedMapping_405000.npz"]
+
+
+def get_temp_file(file_name):
+    return os.path.join(tempfile.gettempdir(), file_name)
+
+
+def get_flags(request):
+    request_json = request.get_json(silent=True)
+    flags = {"seed": 19260817, "stage": 17,
+             "ch": 512, "n_avg_w": 20000, "trc_psi": 0.7, "enable_blur": False}
+
+    if request_json and 'seed' in request_json:
+        flags["seed"] = float(s)
+
+    return flags
+
+
+def download_model():
+    for file in files:
+        blob = bucket.blob(file)
+        blob.download_to_filename(get_temp_file(file))
+    print("model downloaded")
+
+
+def convert_batch_images(x, rows, cols):
+    x = np.asarray(np.clip(x * 127.5 + 127.5, 0.0, 255.0), dtype=np.uint8)
+    _, _, H, W = x.shape
+    x = x.reshape((rows, cols, 3, H, W))
+    x = x.transpose(0, 3, 1, 4, 2)
+    x = x.reshape((rows * H, cols * W, 3))
+    return x
+
+
+def upload_to_storage(image, location="image.jpg"):
+    file_location = get_temp_file("temp.jpg")
+    image.save(file_location)
+    blob = bucket.blob(location)
+    blob.upload_from_filename(file_location)
+
+
+def generate(request):
+
+    flags = get_flags(request)
+
+    download_model()
+    mapping = MappingNetwork(flags["ch"])
+    gen = StyleGenerator(flags["ch"], flags["enable_blur"])
+    chainer.serializers.load_npz(get_temp_file(files[1]), mapping)
+    chainer.serializers.load_npz(get_temp_file(files[0]), gen)
+    for file in files:
+        os.remove(get_temp_file(file))
+    xp = gen.xp
+
+    np.random.seed(flags["seed"])
+    xp.random.seed(flags["seed"])
+
+    enable_trunction_trick = flags["trc_psi"] != 1.0
+
+    if enable_trunction_trick:
+        print("Calculate average W...")
+        w_batch_size = 100
+        n_batches = flags["n_avg_w"] // w_batch_size
+        w_avg = xp.zeros(flags["ch"]).astype('f')
+        with chainer.using_config('train', False), chainer.using_config('enable_backprop', False):
+            for i in tqdm.tqdm(range(n_batches)):
+                z = Variable(xp.asarray(mapping.make_hidden(w_batch_size)))
+                w_cur = mapping(z)
+                w_avg = w_avg + xp.average(w_cur.data, axis=0)
+        w_avg = w_avg / n_batches
+
+    np.random.seed(flags["seed"])
+    xp.random.seed(flags["seed"])
+
+    print("Generating...")
+    with chainer.using_config('train', False), chainer.using_config('enable_backprop', False):
+        z = mapping.make_hidden(1)
+        w = mapping(z).data
+        if enable_trunction_trick:
+            delta = w - w_avg
+            w = delta * flags["trc_psi"] + w_avg
+
+        x = gen(w, flags["stage"])
+        x = chainer.cuda.to_cpu(x.data)
+        x = convert_batch_images(x, 1, 1)
+        upload_to_storage(Image.fromarray(x))
