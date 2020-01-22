@@ -12,7 +12,7 @@ const generatorSlice = createSlice({
   name: "generator",
   initialState,
   reducers: {
-    generateFace(state, action) {
+    generateFace(state) {
       state.loading = true;
       state.error = false;
     },

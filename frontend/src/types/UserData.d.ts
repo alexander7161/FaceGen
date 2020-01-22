@@ -1,0 +1,3 @@
+type UserData = {
+  id: string;
+};
