@@ -8,7 +8,7 @@ import chainer
 from chainer import Variable
 from PIL import Image
 from net import StyleGenerator, MappingNetwork
-from google.cloud import storage
+from google.cloud import storage, firestore
 import tempfile
 
 storage_client = storage.Client()
@@ -23,7 +23,7 @@ def get_temp_file(file_name):
 
 def get_flags(request):
     request_json = request.get_json(silent=True)
-    flags = {"seed": 19260817, "stage": 17,
+    flags = {"stage": 17,
              "ch": 512, "n_avg_w": 20000, "trc_psi": 0.7, "enable_blur": False}
 
     if request_json and 'seed' in request_json:
@@ -68,8 +68,9 @@ def generate(request):
         os.remove(get_temp_file(file))
     xp = gen.xp
 
-    np.random.seed(flags["seed"])
-    xp.random.seed(flags["seed"])
+    if "seed" in flags:
+        np.random.seed(flags["seed"])
+        xp.random.seed(flags["seed"])
 
     enable_trunction_trick = flags["trc_psi"] != 1.0
 
@@ -85,8 +86,9 @@ def generate(request):
                 w_avg = w_avg + xp.average(w_cur.data, axis=0)
         w_avg = w_avg / n_batches
 
-    np.random.seed(flags["seed"])
-    xp.random.seed(flags["seed"])
+    if "seed" in flags:
+        np.random.seed(flags["seed"])
+        xp.random.seed(flags["seed"])
 
     print("Generating...")
     with chainer.using_config('train', False), chainer.using_config('enable_backprop', False):
