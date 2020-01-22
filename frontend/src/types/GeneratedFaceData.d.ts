@@ -1,5 +1,7 @@
 interface GeneratedFaceData {
   id: string;
-  created: boolean;
+  timeCreated: number;
+  timeCompleted: number | undefined;
+  complete: boolean;
   seed?: number;
 }

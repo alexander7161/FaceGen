@@ -10,8 +10,13 @@ from PIL import Image
 from net import StyleGenerator, MappingNetwork
 from google.cloud import storage, firestore
 import tempfile
+import base64
+import json
+from datetime import datetime
 
 storage_client = storage.Client()
+firestore_client = firestore.Client()
+
 bucket = storage_client.bucket("facegen-fc9de.appspot.com")
 
 files = ["SmoothedGenerator_405000.npz", "SmoothedMapping_405000.npz"]
@@ -21,12 +26,11 @@ def get_temp_file(file_name):
     return os.path.join(tempfile.gettempdir(), file_name)
 
 
-def get_flags(request):
-    request_json = request.get_json(silent=True)
+def get_flags(flags):
     flags = {"stage": 17,
              "ch": 512, "n_avg_w": 20000, "trc_psi": 0.7, "enable_blur": False}
 
-    if request_json and 'seed' in request_json:
+    if flags and 'seed' in flags:
         flags["seed"] = float(s)
 
     return flags
@@ -48,16 +52,25 @@ def convert_batch_images(x, rows, cols):
     return x
 
 
-def upload_to_storage(image, location="image.jpg"):
-    file_location = get_temp_file("temp.jpg")
-    image.save(file_location)
-    blob = bucket.blob(location)
-    blob.upload_from_filename(file_location)
+def upload_to_storage(image, ref):
+    temp_file_location = get_temp_file("temp.jpg")
+    image.save(temp_file_location)
+    blob = bucket.blob(ref)
+    blob.upload_from_filename(temp_file_location)
 
 
-def generate(request):
+def update_firestore(ref):
+    firestore_client.document(ref).set(
+        {"complete": True, "timeCompleted": datetime.now().microsecond, "ref": ref}, merge=True)
 
-    flags = get_flags(request)
+
+def subscribe(event, context):
+    firestore_face_ref = base64.b64decode(event['data']).decode('utf-8')
+    print(firestore_face_ref)
+
+    print(event['attributes'])
+    flags = get_flags(event['attributes'])
+    print("Generating with flags" + json.dumps(flags))
 
     download_model()
     mapping = MappingNetwork(flags["ch"])
@@ -101,4 +114,5 @@ def generate(request):
         x = gen(w, flags["stage"])
         x = chainer.cuda.to_cpu(x.data)
         x = convert_batch_images(x, 1, 1)
-        upload_to_storage(Image.fromarray(x))
+        upload_to_storage(Image.fromarray(x), firestore_face_ref)
+        update_firestore(firestore_face_ref)

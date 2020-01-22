@@ -13,7 +13,7 @@ const saga = createSagaMiddleware();
 
 const store = configureStore({
   reducer,
-  middleware: [saga, routerMiddleware(history), ...getDefaultMiddleware()]
+  middleware: [saga, routerMiddleware(history)]
 });
 
 saga.run(AppSagas);
