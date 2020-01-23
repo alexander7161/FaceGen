@@ -8,10 +8,15 @@ import chainer
 from chainer import Variable
 from PIL import Image
 from net import StyleGenerator, MappingNetwork
-from google.cloud import storage
+from google.cloud import storage, firestore
 import tempfile
+import base64
+import json
+from datetime import datetime
 
 storage_client = storage.Client()
+firestore_client = firestore.Client()
+
 bucket = storage_client.bucket("facegen-fc9de.appspot.com")
 
 files = ["SmoothedGenerator_405000.npz", "SmoothedMapping_405000.npz"]
@@ -21,12 +26,11 @@ def get_temp_file(file_name):
     return os.path.join(tempfile.gettempdir(), file_name)
 
 
-def get_flags(request):
-    request_json = request.get_json(silent=True)
-    flags = {"seed": 19260817, "stage": 17,
+def get_flags(flags):
+    flags = {"stage": 17,
              "ch": 512, "n_avg_w": 20000, "trc_psi": 0.7, "enable_blur": False}
 
-    if request_json and 'seed' in request_json:
+    if flags and 'seed' in flags:
         flags["seed"] = float(s)
 
     return flags
@@ -48,18 +52,7 @@ def convert_batch_images(x, rows, cols):
     return x
 
 
-def upload_to_storage(image, location="image.jpg"):
-    file_location = get_temp_file("temp.jpg")
-    image.save(file_location)
-    blob = bucket.blob(location)
-    blob.upload_from_filename(file_location)
-
-
-def generate(request):
-
-    flags = get_flags(request)
-
-    download_model()
+def generate_image(flags):
     mapping = MappingNetwork(flags["ch"])
     gen = StyleGenerator(flags["ch"], flags["enable_blur"])
     chainer.serializers.load_npz(get_temp_file(files[1]), mapping)
@@ -68,8 +61,9 @@ def generate(request):
         os.remove(get_temp_file(file))
     xp = gen.xp
 
-    np.random.seed(flags["seed"])
-    xp.random.seed(flags["seed"])
+    if "seed" in flags:
+        np.random.seed(flags["seed"])
+        xp.random.seed(flags["seed"])
 
     enable_trunction_trick = flags["trc_psi"] != 1.0
 
@@ -85,8 +79,9 @@ def generate(request):
                 w_avg = w_avg + xp.average(w_cur.data, axis=0)
         w_avg = w_avg / n_batches
 
-    np.random.seed(flags["seed"])
-    xp.random.seed(flags["seed"])
+    if "seed" in flags:
+        np.random.seed(flags["seed"])
+        xp.random.seed(flags["seed"])
 
     print("Generating...")
     with chainer.using_config('train', False), chainer.using_config('enable_backprop', False):
@@ -99,4 +94,32 @@ def generate(request):
         x = gen(w, flags["stage"])
         x = chainer.cuda.to_cpu(x.data)
         x = convert_batch_images(x, 1, 1)
-        upload_to_storage(Image.fromarray(x))
+        return x
+
+
+def upload_to_storage(image, ref, storageRef):
+    temp_file_location = get_temp_file("temp.jpg")
+    image.save(temp_file_location)
+    blob = bucket.blob(storageRef)
+    blob.upload_from_filename(temp_file_location)
+
+
+def update_firestore(ref, storageRef):
+    firestore_client.document(ref).set(
+        {"complete": True, "timeCompleted": datetime.now().microsecond, "storageRef": storageRef}, merge=True)
+
+
+def subscribe(event, context):
+    firestore_face_ref = base64.b64decode(event['data']).decode('utf-8')
+    storage_face_ref = firestore_face_ref + ".jpg"
+    print(firestore_face_ref)
+
+    print(event['attributes'])
+    flags = get_flags(event['attributes'])
+    print("Generating with flags" + json.dumps(flags))
+
+    download_model()
+    x = generate_image(flags)
+
+    upload_to_storage(Image.fromarray(x), firestore_face_ref, storage_face_ref)
+    update_firestore(firestore_face_ref, storage_face_ref)

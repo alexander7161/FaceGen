@@ -6,3 +6,4 @@ scipy
 chainer
 tqdm
 google-cloud-storage
+google-cloud-firestore

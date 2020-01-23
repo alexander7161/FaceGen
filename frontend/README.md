@@ -1,5 +1,30 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Development setup
+
+1. Create file fbConfig.ts in src with config from your firebase app:
+
+   ```typescript
+   import firebase from "firebase/app";
+
+   const config = {
+     apiKey: "x",
+     authDomain: "x",
+     databaseURL: "x",
+     projectId: "x",
+     storageBucket: "x",
+     messagingSenderId: "x",
+     appId: "x",
+     measurementId: "x"
+   };
+
+   const firebaseApp = firebase.initializeApp(config);
+
+   export default firebaseApp;
+   ```
+
+```
+
 ## Available Scripts
 
 In the project directory, you can run:
@@ -42,3 +67,4 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+```
