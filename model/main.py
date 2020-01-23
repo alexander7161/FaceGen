@@ -52,27 +52,7 @@ def convert_batch_images(x, rows, cols):
     return x
 
 
-def upload_to_storage(image, ref):
-    temp_file_location = get_temp_file("temp.jpg")
-    image.save(temp_file_location)
-    blob = bucket.blob(ref)
-    blob.upload_from_filename(temp_file_location)
-
-
-def update_firestore(ref):
-    firestore_client.document(ref).set(
-        {"complete": True, "timeCompleted": datetime.now().microsecond, "ref": ref}, merge=True)
-
-
-def subscribe(event, context):
-    firestore_face_ref = base64.b64decode(event['data']).decode('utf-8')
-    print(firestore_face_ref)
-
-    print(event['attributes'])
-    flags = get_flags(event['attributes'])
-    print("Generating with flags" + json.dumps(flags))
-
-    download_model()
+def generate_image(flags):
     mapping = MappingNetwork(flags["ch"])
     gen = StyleGenerator(flags["ch"], flags["enable_blur"])
     chainer.serializers.load_npz(get_temp_file(files[1]), mapping)
@@ -114,5 +94,32 @@ def subscribe(event, context):
         x = gen(w, flags["stage"])
         x = chainer.cuda.to_cpu(x.data)
         x = convert_batch_images(x, 1, 1)
-        upload_to_storage(Image.fromarray(x), firestore_face_ref)
-        update_firestore(firestore_face_ref)
+        return x
+
+
+def upload_to_storage(image, ref, storageRef):
+    temp_file_location = get_temp_file("temp.jpg")
+    image.save(temp_file_location)
+    blob = bucket.blob(storageRef)
+    blob.upload_from_filename(temp_file_location)
+
+
+def update_firestore(ref, storageRef):
+    firestore_client.document(ref).set(
+        {"complete": True, "timeCompleted": datetime.now().microsecond, "storageRef": storageRef}, merge=True)
+
+
+def subscribe(event, context):
+    firestore_face_ref = base64.b64decode(event['data']).decode('utf-8')
+    storage_face_ref = firestore_face_ref + ".jpg"
+    print(firestore_face_ref)
+
+    print(event['attributes'])
+    flags = get_flags(event['attributes'])
+    print("Generating with flags" + json.dumps(flags))
+
+    download_model()
+    x = generate_image(flags)
+
+    upload_to_storage(Image.fromarray(x), firestore_face_ref, storage_face_ref)
+    update_firestore(firestore_face_ref, storage_face_ref)

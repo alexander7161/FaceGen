@@ -4,4 +4,5 @@ interface GeneratedFaceData {
   timeCompleted: number | undefined;
   complete: boolean;
   seed?: number;
+  storageRef?: string;
 }
