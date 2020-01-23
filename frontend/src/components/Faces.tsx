@@ -19,8 +19,8 @@ const Face = ({ f }: { f: GeneratedFaceData }) => {
 
 const Faces = () => {
   const faces = useSelector(facesSelector);
-  if (faces === null) {
-    return <>No Faces yet</>;
+  if (!faces) {
+    return <div>No Faces yet</div>;
   }
 
   return (
