@@ -7,7 +7,7 @@ import { CircularProgress } from "@material-ui/core";
 const Face = ({ f }: { f: GeneratedFaceData }) => {
   return (
     <div key={f.id}>
-      {f.id} {f.complete.toString()}
+      {f.id}
       {f.complete && f.storageRef ? (
         <FirebaseImage storageRef={f.storageRef} />
       ) : (
@@ -19,8 +19,8 @@ const Face = ({ f }: { f: GeneratedFaceData }) => {
 
 const Faces = () => {
   const faces = useSelector(facesSelector);
-  if (faces === null) {
-    return <>No Faces yet</>;
+  if (!faces) {
+    return <div>No Faces yet</div>;
   }
 
   return (

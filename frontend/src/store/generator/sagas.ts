@@ -1,4 +1,4 @@
-import { put, takeEvery, select, call } from "redux-saga/effects";
+import { put, takeEvery, select, call, debounce } from "redux-saga/effects";
 import { generateFace, generateFaceSuccess, generateFaceFailure } from ".";
 import { firestore } from "firebase";
 import { userSelector } from "../user/selectors";
@@ -44,5 +44,5 @@ function* generateFaceSaga() {
 }
 
 export default function* root() {
-  yield takeEvery(generateFace, generateFaceSaga);
+  yield debounce(5000, generateFace, generateFaceSaga);
 }
