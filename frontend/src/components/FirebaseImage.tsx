@@ -9,7 +9,6 @@ const FirebaseImage = ({ storageRef }: { storageRef: string }) => {
     try {
       (async () => {
         const pathReference = storage.ref(storageRef);
-        console.log(storageRef);
         const fileURL = await pathReference.getDownloadURL();
         setFileURL(fileURL);
       })();

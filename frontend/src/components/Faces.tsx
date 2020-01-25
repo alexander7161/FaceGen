@@ -6,7 +6,7 @@ import { CircularProgress } from "@material-ui/core";
 
 const Face = ({ f }: { f: GeneratedFaceData }) => {
   return (
-    <div key={f.id}>
+    <div>
       {f.id}
       {f.complete && f.storageRef ? (
         <FirebaseImage storageRef={f.storageRef} />
@@ -26,7 +26,7 @@ const Faces = () => {
   return (
     <>
       {faces.map(f => (
-        <Face f={f} />
+        <Face key={f.id} f={f} />
       ))}
     </>
   );
