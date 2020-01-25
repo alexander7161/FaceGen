@@ -1,24 +1,24 @@
 import React from "react";
-import {
-  AppBar,
-  Toolbar,
-  IconButton,
-  Typography,
-  Button
-} from "@material-ui/core";
-import MenuIcon from "@material-ui/icons/Menu";
+import { AppBar, Toolbar, Typography, Button } from "@material-ui/core";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { signInWithGoogle, signOut } from "../store/user";
 import { userSelector } from "../store/user/selectors";
+import Link from "./Link";
 
-const MenuButton = styled(IconButton)`
-  margin-right: 16px;
+const TitleContainer = styled.div`
+  margin-right: auto;
 `;
 
-const Title = styled(Typography)`
-  flex-grow: 1;
-`;
+const Title = () => {
+  return (
+    <TitleContainer>
+      <Link to="/">
+        <Typography variant="h6">FaceGen</Typography>
+      </Link>
+    </TitleContainer>
+  );
+};
 
 const Appbar = () => {
   const user = useSelector(userSelector);
@@ -28,10 +28,7 @@ const Appbar = () => {
   return (
     <AppBar position="static">
       <Toolbar>
-        <MenuButton edge="start" color="inherit" aria-label="menu">
-          <MenuIcon />
-        </MenuButton>
-        <Title variant="h6">FaceGen</Title>
+        <Title />
         {user?.isAnonymous === false ? (
           <Button onClick={logout} color="inherit">
             Sign Out

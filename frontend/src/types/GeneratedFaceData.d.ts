@@ -5,4 +5,5 @@ interface GeneratedFaceData {
   complete: boolean;
   seed?: number;
   storageRef?: string;
+  error?: boolean;
 }

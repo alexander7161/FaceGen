@@ -12,7 +12,7 @@ from google.cloud import storage, firestore
 import tempfile
 import base64
 import json
-from datetime import datetime
+import time
 
 storage_client = storage.Client()
 firestore_client = firestore.Client()
@@ -105,8 +105,8 @@ def upload_to_storage(image, ref, storageRef):
 
 
 def update_firestore(ref, storageRef, error=False):
-    face_doc = {"complete": True, "timeCompleted": datetime.now(
-    ).microsecond, "storageRef": storageRef}
+    face_doc = {"complete": True, "timeCompleted": int(
+        round(time.time() * 1000)), "storageRef": storageRef}
     if error:
         face_doc["error"] = True
         face_doc["complete"] = False

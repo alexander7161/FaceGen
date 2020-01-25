@@ -8,7 +8,9 @@ const Face = ({ f }: { f: GeneratedFaceData }) => {
   return (
     <div>
       {f.id}
-      {f.complete && f.storageRef ? (
+      {f.error ? (
+        "error"
+      ) : f.complete && f.storageRef ? (
         <FirebaseImage storageRef={f.storageRef} />
       ) : (
         <CircularProgress />
@@ -17,7 +19,7 @@ const Face = ({ f }: { f: GeneratedFaceData }) => {
   );
 };
 
-const Faces = () => {
+const FacesList = () => {
   const faces = useSelector(facesSelector);
   if (!faces) {
     return <div>No Faces yet</div>;
@@ -32,4 +34,4 @@ const Faces = () => {
   );
 };
 
-export default Faces;
+export default FacesList;
