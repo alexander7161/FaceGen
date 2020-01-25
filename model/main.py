@@ -104,9 +104,15 @@ def upload_to_storage(image, ref, storageRef):
     blob.upload_from_filename(temp_file_location)
 
 
-def update_firestore(ref, storageRef):
-    firestore_client.document(ref).set(
-        {"complete": True, "timeCompleted": datetime.now().microsecond, "storageRef": storageRef}, merge=True)
+def update_firestore(ref, storageRef, error=False):
+    face_doc = {"complete": True, "timeCompleted": datetime.now(
+    ).microsecond, "storageRef": storageRef}
+    if error:
+        face_doc["error"] = True
+        face_doc["complete"] = False
+        face_doc["timeCompleted"] = None
+        face_doc["storageRef"] = None
+    firestore_client.document(ref).set(face_doc, merge=True)
 
 
 def subscribe(event, context):
@@ -117,9 +123,12 @@ def subscribe(event, context):
     print(event['attributes'])
     flags = get_flags(event['attributes'])
     print("Generating with flags" + json.dumps(flags))
+    try:
+        download_model()
+        x = generate_image(flags)
 
-    download_model()
-    x = generate_image(flags)
-
-    upload_to_storage(Image.fromarray(x), firestore_face_ref, storage_face_ref)
-    update_firestore(firestore_face_ref, storage_face_ref)
+        upload_to_storage(Image.fromarray(
+            x), firestore_face_ref, storage_face_ref)
+        update_firestore(firestore_face_ref, storage_face_ref)
+    except:
+        update_firestore(firestore_face_ref, storage_face_ref, True)
