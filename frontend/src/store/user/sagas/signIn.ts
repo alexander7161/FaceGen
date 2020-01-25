@@ -1,9 +1,10 @@
 import { takeEvery, call, select, put } from "redux-saga/effects";
 import rsf from "../../rsf";
 import { signIn, signInAnonymously, signInWithGoogle, setUser } from "..";
-import { auth } from "firebase";
 import { userSelector } from "../selectors";
 import { push } from "connected-react-router";
+import * as firebase from "firebase/app";
+import "firebase/auth";
 
 function* signInSaga({
   payload: { email, password }
@@ -24,15 +25,19 @@ function* signInAnonymouslySaga() {
 }
 
 function* signInWithGoogleSaga() {
-  const provider = new auth.GoogleAuthProvider();
+  const provider = new firebase.auth.GoogleAuthProvider();
   const user: firebase.User | null = yield select(userSelector);
   if (user) {
-    const result: auth.UserCredential = yield user.linkWithPopup(provider);
+    const result: firebase.auth.UserCredential = yield user.linkWithPopup(
+      provider
+    );
     yield put(setUser(result.user));
     yield put(push("/"));
     console.log(result);
   } else {
-    const result: auth.UserCredential = yield auth().signInWithPopup(provider);
+    const result: firebase.auth.UserCredential = yield firebase
+      .auth()
+      .signInWithPopup(provider);
     console.log(result);
   }
 }

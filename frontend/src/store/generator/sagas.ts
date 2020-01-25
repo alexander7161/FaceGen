@@ -1,11 +1,12 @@
-import { put, takeEvery, select, call, debounce } from "redux-saga/effects";
+import { put, select, call, debounce } from "redux-saga/effects";
 import { generateFace, generateFaceSuccess, generateFaceFailure } from ".";
-import { firestore } from "firebase";
+import firebase from "../../fbConfig";
 import { userSelector } from "../user/selectors";
 import rsf from "../rsf";
 
 const createFaceObjectSaga = async (userId: string) => {
-  const faceRef = await firestore()
+  const faceRef = await firebase
+    .firestore()
     .collection(`users/${userId}/faces`)
     .add({ timeCreated: +new Date(), complete: false });
   return faceRef.id;

@@ -2,10 +2,10 @@ import { Action } from "redux";
 import rsf from "../rsf";
 import { take, cancel, fork } from "redux-saga/effects";
 import { signOut } from "../user";
-import { firestore } from "firebase";
+import firebase from "../../fbConfig";
 
 export const syncCollection = (
-  ref: string | firestore.Query,
+  ref: string | firebase.firestore.Query,
   onSuccess: (data: unknown) => Action<any>,
   onFailure?: (error: Error) => Action<any>,
   transform?: (payload: any & { id: string }) => any
@@ -39,7 +39,7 @@ export const syncCollection = (
   };
 
 export const syncDocument = (
-  ref: string | firestore.DocumentReference,
+  ref: string | firebase.firestore.DocumentReference,
   onSuccess: (data: unknown) => Action<any>,
   onFailure?: (error: Error) => Action<any>,
   transform?: (payload: any & { id: string }) => any

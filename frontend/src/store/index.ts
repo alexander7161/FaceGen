@@ -1,4 +1,4 @@
-import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
+import { configureStore } from "@reduxjs/toolkit";
 import { createBrowserHistory } from "history";
 import createRootReducer from "./reducers";
 import createSagaMiddleware from "redux-saga";
