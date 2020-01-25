@@ -9,7 +9,7 @@ const GenerateFaceButton = () => {
   const generateFaceFunction = () => dispatch(generateFace());
   return (
     <Button onClick={generateFaceFunction} variant="contained" color="primary">
-      Primary
+      Generate
     </Button>
   );
 };
