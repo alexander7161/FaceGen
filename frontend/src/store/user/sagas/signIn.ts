@@ -26,7 +26,7 @@ function* signInAnonymouslySaga() {
 
 function* signInWithGoogleSaga() {
   const provider = new firebase.auth.GoogleAuthProvider();
-  const user: firebase.User | null = yield select(userSelector);
+  const user: firebase.User | null = firebase.auth().currentUser;
   if (user) {
     const result: firebase.auth.UserCredential = yield user.linkWithPopup(
       provider

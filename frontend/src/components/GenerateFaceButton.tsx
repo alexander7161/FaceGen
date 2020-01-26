@@ -1,9 +1,10 @@
 import React from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { generateFace } from "../store/generator";
 import styled from "styled-components";
 import Add from "@material-ui/icons/Add";
-import { Fab } from "@material-ui/core";
+import { Fab, CircularProgress } from "@material-ui/core";
+import { selectGenerateLoading } from "../store/generator/selectors";
 
 const AddIcon = styled(Add)`
   margin-right: 4px;
@@ -13,10 +14,12 @@ const AbsoluteFab = styled(Fab)`
   position: fixed;
   bottom: 24px;
   right: 16px;
+  min-width: 100px;
 `;
 
 const GenerateFaceButton = () => {
   const dispatch = useDispatch();
+  const loading = useSelector(selectGenerateLoading);
 
   const generateFaceFunction = () => dispatch(generateFace());
   return (
@@ -24,9 +27,16 @@ const GenerateFaceButton = () => {
       onClick={generateFaceFunction}
       variant="extended"
       color="primary"
+      disabled={loading}
     >
-      <AddIcon />
-      Generate
+      {loading ? (
+        <CircularProgress />
+      ) : (
+        <>
+          <AddIcon />
+          Generate
+        </>
+      )}
     </AbsoluteFab>
   );
 };

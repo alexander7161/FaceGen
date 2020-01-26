@@ -1,7 +1,8 @@
 import React from "react";
-import Link from "../components/Link";
 import { Button, Container } from "@material-ui/core";
 import styled from "styled-components";
+import { useDispatch } from "react-redux";
+import { goToGeneratePage } from "../store/generator";
 
 const FlexBox = styled.div`
   margin-top: 16px;
@@ -10,14 +11,17 @@ const FlexBox = styled.div`
 `;
 
 const HomePage = () => {
+  const dispatch = useDispatch();
   return (
     <Container maxWidth="md">
       <FlexBox>
-        <Link to="/generate">
-          <Button variant="contained" color="primary">
-            Generate a face
-          </Button>
-        </Link>
+        <Button
+          onClick={() => dispatch(goToGeneratePage())}
+          variant="contained"
+          color="primary"
+        >
+          Generate a face
+        </Button>
       </FlexBox>
     </Container>
   );

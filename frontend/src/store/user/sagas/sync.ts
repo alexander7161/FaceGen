@@ -8,7 +8,9 @@ function* syncUserSaga() {
   while (true) {
     const { error, user } = yield take(channel);
 
-    yield put(setUser(user));
+    const userJson = user?.toJSON();
+
+    yield put(setUser(userJson));
     if (error) {
       yield put(setUserError(error));
     }

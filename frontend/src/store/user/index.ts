@@ -31,7 +31,8 @@ const userSlice = createSlice({
     signIn(state, action) {},
     signOut() {},
     signInAnonymously(state, action) {},
-    signInWithGoogle() {}
+    signInWithGoogle() {},
+    deleteUser() {}
   }
 });
 // Extract the action creators object and the reducer
@@ -44,7 +45,8 @@ export const {
   signOut,
   setUserData,
   signInAnonymously,
-  signInWithGoogle
+  signInWithGoogle,
+  deleteUser
 } = actions;
 // Export the reducer, either as a default or named export
 export default reducer;

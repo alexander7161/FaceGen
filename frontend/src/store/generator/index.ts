@@ -12,11 +12,12 @@ const generatorSlice = createSlice({
   name: "generator",
   initialState,
   reducers: {
+    goToGeneratePage(state) {},
     generateFace(state) {
       state.loading = true;
       state.error = false;
     },
-    generateFaceSuccess(state, action) {
+    generateFaceSuccess(state) {
       state.loading = false;
     },
     generateFaceFailure(state, action: PayloadAction<Error>) {
@@ -31,7 +32,8 @@ const { actions, reducer } = generatorSlice;
 export const {
   generateFace,
   generateFaceSuccess,
-  generateFaceFailure
+  generateFaceFailure,
+  goToGeneratePage
 } = actions;
 // Export the reducer, either as a default or named export
 export default reducer;

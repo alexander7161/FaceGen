@@ -17,7 +17,9 @@ const FirebaseImage = ({ storageRef }: { storageRef: string }) => {
   if (!fileURL) {
     return <p>File not found.</p>;
   }
-  return <img alt="" src={fileURL} height={100} width={100} />;
+  return (
+    <img alt="" src={fileURL} style={{ height: "inherit", width: "inherit" }} />
+  );
 };
 
 export default FirebaseImage;

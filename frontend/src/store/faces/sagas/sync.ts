@@ -1,8 +1,8 @@
 import { put, fork, takeLatest } from "redux-saga/effects";
-import { setUser } from "../user";
-import { syncCollection } from "../utils/firestoreSync";
-import { receiveFaces } from ".";
-import firebase from "../../fbConfig";
+import firebase from "../../../fbConfig";
+import { setUser } from "../../user";
+import { syncCollection } from "../../utils/firestoreSync";
+import { receiveFaces } from "..";
 
 function* syncFacesSaga({ payload }: ReturnType<typeof setUser>) {
   if (payload) {
