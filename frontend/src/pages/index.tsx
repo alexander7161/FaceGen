@@ -5,10 +5,12 @@ import GeneratePage from "./GeneratePage";
 
 const Pages = () => {
   return (
-    <Switch>
-      <Route exact path="/generate" component={GeneratePage} />
-      <Route path="/" component={HomePage} />
-    </Switch>
+    <div style={{ marginTop: 16 }}>
+      <Switch>
+        <Route exact path="/generate" component={GeneratePage} />
+        <Route path="/" component={HomePage} />
+      </Switch>
+    </div>
   );
 };
 

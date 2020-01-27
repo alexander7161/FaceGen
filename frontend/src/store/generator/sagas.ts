@@ -1,4 +1,4 @@
-import { put, select, call, debounce, takeEvery } from "redux-saga/effects";
+import { put, call, debounce, takeEvery } from "redux-saga/effects";
 import {
   generateFace,
   generateFaceSuccess,
@@ -6,7 +6,6 @@ import {
   goToGeneratePage
 } from ".";
 import firebase from "../../fbConfig";
-import { userSelector } from "../user/selectors";
 import rsf from "../rsf";
 import { push } from "connected-react-router";
 

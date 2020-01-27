@@ -1,7 +1,6 @@
-import { takeEvery, call, select, put } from "redux-saga/effects";
+import { takeEvery, call, put } from "redux-saga/effects";
 import rsf from "../../rsf";
 import { signIn, signInAnonymously, signInWithGoogle, setUser } from "..";
-import { userSelector } from "../selectors";
 import { push } from "connected-react-router";
 import * as firebase from "firebase/app";
 import "firebase/auth";
