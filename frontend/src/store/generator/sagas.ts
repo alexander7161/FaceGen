@@ -8,12 +8,16 @@ import {
 import firebase from "../../fbConfig";
 import rsf from "../rsf";
 import { push } from "connected-react-router";
+import { firestore } from "firebase";
 
 const createFaceObjectSaga = async (userId: string) => {
   const faceRef = await firebase
     .firestore()
     .collection(`users/${userId}/faces`)
-    .add({ timeCreated: +new Date(), complete: false });
+    .add({
+      timeCreated: firestore.FieldValue.serverTimestamp(),
+      complete: false
+    });
   return faceRef.id;
 };
 

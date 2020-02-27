@@ -105,8 +105,8 @@ def upload_to_storage(image, ref, storageRef):
 
 
 def update_firestore(ref, storageRef, error=False):
-    face_doc = {"complete": True, "timeCompleted": int(
-        round(time.time() * 1000)), "storageRef": storageRef}
+    face_doc = {"complete": True,
+                "timeCompleted": firestore.SERVER_TIMESTAMP, "storageRef": storageRef}
     if error:
         face_doc["error"] = True
         face_doc["complete"] = False
