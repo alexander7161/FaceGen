@@ -44,7 +44,6 @@ const Face = ({ f }: { f: GeneratedFaceData }) => {
   const error = f.error || (!f.complete && f.timeCreated < +dateNow);
 
   const imageURL = useFirebaseFile(f.storageRef || "");
-  console.log(imageURL);
   const dispatch = useDispatch();
   const deleteFaceFunction = () => {
     const dateNow = new Date();

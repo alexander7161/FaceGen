@@ -13,7 +13,7 @@ type FirebaseGeneratedFaceData = GeneratedFaceData & {
 const isTimestamp = (
   x: number | firestore.Timestamp | undefined
 ): x is firestore.Timestamp => {
-  return (x as firestore.Timestamp).nanoseconds !== undefined;
+  return !!(x && (x as firestore.Timestamp).nanoseconds !== undefined);
 };
 
 function* syncFacesSaga({ payload }: ReturnType<typeof setUser>) {
