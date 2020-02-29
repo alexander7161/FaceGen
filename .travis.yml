@@ -20,7 +20,7 @@ jobs:
         - npm run firestore-test --prefix ./firestore/
     - script:
         - npm install --prefix ./frontend/
-        - npm run test --prefix ./frontend/
+        - npm run test --prefix ./frontend/ -- --passWithNoTests
       name: frontend
     - stage: deploy
       script:
