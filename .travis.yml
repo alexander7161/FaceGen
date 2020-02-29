@@ -10,13 +10,14 @@ before_install:
   - openssl aes-256-cbc -K $encrypted_0a6446eb3ae3_key -iv $encrypted_0a6446eb3ae3_iv -in firebase-config.json.enc -out firebase-config.json -d
 jobs:
   include:
-    - stage: firestore rules
+    - stage: Tests
+    - name: firestore rules
       script:
         - npm i -g firebase firebase-tools
         - firebase setup:emulators:firestore
         - npm install --prefix ./firestore/
         - npm run firestore-test --prefix ./firestore/
-    - stage: frontend
+    - name: frontend
       script:
         - npm install --prefix ./frontend/
         - npm run test --prefix ./frontend/
