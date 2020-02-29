@@ -9,6 +9,8 @@ jobs:
   include:
     - stage: test firestore rules
       script:
+        - npm i -g firebase firebase-tools
+        - firebase setup:emulators:firestore
         - npm install --prefix ./firestore/
         - npm run firestore-test --prefix ./firestore/
     - stage: deploy
