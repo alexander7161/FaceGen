@@ -7,12 +7,16 @@ cache:
     - firestore/node_modules
 jobs:
   include:
-    - stage: test firestore rules
+    - stage: firestore rules
       script:
         - npm i -g firebase firebase-tools
         - firebase setup:emulators:firestore
         - npm install --prefix ./firestore/
         - npm run firestore-test --prefix ./firestore/
+    - stage: frontend
+      script:
+        - npm install --prefix ./frontend/
+        - npm run test --prefix ./frontend/
     - stage: deploy
       script:
         - npm install --prefix ./functions/
