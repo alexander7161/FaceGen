@@ -5,7 +5,7 @@ import { Provider } from "react-redux";
 import { CssBaseline } from "@material-ui/core";
 
 import Appbar from "./components/Appbar";
-import Pages from "./pages";
+import Pages from "./pages/Pages";
 
 const App: React.FC = () => {
   return (
