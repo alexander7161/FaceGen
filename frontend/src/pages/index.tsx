@@ -1,6 +1,6 @@
 import React from "react";
-import HomePage from "./HomePage";
 import { Route, Switch } from "react-router-dom"; // react-router v4/v5
+import HomePage from "./HomePage";
 import GeneratePage from "./GeneratePage";
 
 const Pages = () => {
