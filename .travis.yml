@@ -8,7 +8,7 @@ cache:
     - frontend/node_modules
 before_install:
   - openssl aes-256-cbc -K $encrypted_155663baf9b1_key -iv $encrypted_155663baf9b1_iv
-    -in firebase-config.json.enc -out firebase-config.json -d
+    -in firebase-config.json.enc -out frontend/src/firebase-config.json -d
 jobs:
   include:
     - stage: Tests
