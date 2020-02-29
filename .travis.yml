@@ -5,6 +5,7 @@ cache:
   npm: true
   directories:
     - firestore/node_modules
+    - frontend/node_modules
 jobs:
   include:
     - stage: firestore rules
