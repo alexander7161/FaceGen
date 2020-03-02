@@ -97,3 +97,6 @@ class Model():
             model.save('saved_model/my_model')
         except:
             model.save('saved_model/my_model')
+
+    def predict(self, data):
+        return self.predict(data)
