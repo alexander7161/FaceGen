@@ -1,13 +1,7 @@
-import { put, call, debounce, takeEvery } from "redux-saga/effects";
-import {
-  generateFace,
-  generateFaceSuccess,
-  generateFaceFailure,
-  goToGeneratePage
-} from ".";
+import { put, call, debounce } from "redux-saga/effects";
+import { generateFace, generateFaceSuccess, generateFaceFailure } from ".";
 import firebase from "../../fbConfig";
 import rsf from "../rsf";
-import { push } from "connected-react-router";
 import { firestore } from "firebase";
 
 const createFaceObjectSaga = async (userId: string) => {
@@ -59,12 +53,6 @@ function* generateFaceSaga() {
   }
 }
 
-function* goToGeneratePageSaga() {
-  yield put(push("/generate"));
-  yield put(generateFace());
-}
-
 export default function* root() {
   yield debounce(5000, generateFace, generateFaceSaga);
-  yield takeEvery(goToGeneratePage, goToGeneratePageSaga);
 }

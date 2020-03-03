@@ -1,5 +1,8 @@
 batch_size = 2
-epochs = 15
+epochs = 50
 IMG_HEIGHT = 150
 IMG_WIDTH = 150
-checkpoint_path = "training_1/cp.ckpt"
+
+
+def get_checkpoint_path(feature):
+    return "checkpoints"+feature+"/cp.ckpt"

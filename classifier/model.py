@@ -11,22 +11,24 @@ os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
 
 class Model():
-    def __init__(self, epochs=2, batch_size=1):
+    def __init__(self, feature="gender", epochs=2, batch_size=1):
+        self.feature = feature
         self.epochs = epochs
         self.batch_size = batch_size
-        self.train_generator, self.validation_generator = self.read_data()
+        self.train_generator, self.validation_generator = self.read_data(
+            feature)
         self.callbacks = self.get_callbacks()
         self.model = self.get_model()
 
     def get_callbacks(self):
-        cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=constants.checkpoint_path,
+        cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=constants.get_checkpoint_path(self.feature),
                                                          save_weights_only=True,
                                                          verbose=1)
         return [cp_callback]
 
-    def read_data(self):
+    def read_data(self, feature):
         train_df = pd.read_csv("./face_data/labels.csv", header=0)
-        train_df['gender'] = train_df['gender'].astype('str')
+        train_df[feature] = train_df[feature].astype('str')
         train_datagen = ImageDataGenerator(rescale=1./255,
                                            shear_range=0.2,
                                            zoom_range=0.2,
@@ -36,7 +38,7 @@ class Model():
             dataframe=train_df,
             directory='face_data',
             x_col="filename",
-            y_col="gender",
+            y_col=feature,
             target_size=(
                 constants.IMG_HEIGHT, constants.IMG_WIDTH),
             batch_size=constants.batch_size,
@@ -77,8 +79,8 @@ class Model():
         return model
 
     def fit(self):
-        self.model.fit(
-            generator=self.train_generator,
+        return self.model.fit(
+            self.train_generator,
             validation_data=self.validation_generator,
             epochs=constants.epochs,
             callbacks=self.callbacks)
@@ -89,14 +91,14 @@ class Model():
         return self.model.metrics_names, evaluation
 
     def load_weights(self):
-        self.model.load_weights(constants.checkpoint_path)
+        self.model.load_weights(constants.get_checkpoint_path(self.feature))
 
     def save(self, path):
         try:
-            os.mkdir('saved_model')
-            model.save('saved_model/my_model')
+            os.mkdir('models')
+            model.save('models/'+self.feature)
         except:
-            model.save('saved_model/my_model')
+            model.save('models/'+self.feature)
 
     def predict(self, data):
         return self.predict(data)

@@ -70,7 +70,9 @@ firebase-config.json
 
 classifier/__pycache__/
 classifier/face_data
-classifier/training_1
+classifier/checkpoints
 classifier/saved_model
 
 
+
+classifier/checkpoints/gender/checkpoint
