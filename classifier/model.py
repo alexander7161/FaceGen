@@ -11,7 +11,7 @@ os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
 
 class Model():
-    def __init__(self, feature="gender", epochs=2, batch_size=1):
+    def __init__(self, feature="gender", epochs=15, batch_size=2):
         self.feature = feature
         self.epochs = epochs
         self.batch_size = batch_size
@@ -41,7 +41,7 @@ class Model():
             y_col=feature,
             target_size=(
                 constants.IMG_HEIGHT, constants.IMG_WIDTH),
-            batch_size=constants.batch_size,
+            batch_size=self.batch_size,
             class_mode='binary',
             subset='training')
 
@@ -52,7 +52,7 @@ class Model():
             y_col="gender",
             target_size=(
                 constants.IMG_HEIGHT, constants.IMG_WIDTH),
-            batch_size=constants.batch_size,
+            batch_size=self.batch_size,
             class_mode='binary',
             subset='validation')
 
@@ -82,7 +82,7 @@ class Model():
         return self.model.fit(
             self.train_generator,
             validation_data=self.validation_generator,
-            epochs=constants.epochs,
+            epochs=self.epochs,
             callbacks=self.callbacks)
 
     def evaluate(self):
@@ -91,14 +91,18 @@ class Model():
         return self.model.metrics_names, evaluation
 
     def load_weights(self):
-        self.model.load_weights(constants.get_checkpoint_path(self.feature))
+        try:
+            self.model.load_weights(
+                constants.get_checkpoint_path(self.feature))
+        except:
+            print("No checkpoint found")
 
-    def save(self, path):
+    def save(self):
         try:
             os.mkdir('models')
-            model.save('models/'+self.feature)
+            self.model.save('models/'+self.feature)
         except:
-            model.save('models/'+self.feature)
+            self.model.save('models/'+self.feature)
 
     def predict(self, data):
         return self.predict(data)

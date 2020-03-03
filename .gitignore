@@ -72,7 +72,10 @@ classifier/__pycache__/
 classifier/face_data
 classifier/checkpoints
 classifier/saved_model
-
+classifier/models
+*.pyc
 
 
 classifier/checkpoints/gender/checkpoint
+
+.vscode/
