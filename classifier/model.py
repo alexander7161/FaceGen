@@ -11,17 +11,21 @@ os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
 
 class Model():
-    def __init__(self, feature="gender", epochs=15, batch_size=2):
+    def __init__(self, feature="gender", epochs=15, batch_size=2, test=1):
         self.feature = feature
         self.epochs = epochs
         self.batch_size = batch_size
         self.train_generator, self.validation_generator = self.read_data(
             feature)
-        self.callbacks = self.get_callbacks()
         self.model = self.get_model()
+        if test != 1:
+            self.test = feature+str(test)
+        else:
+            self.test = feature
+        self.callbacks = self.get_callbacks()
 
     def get_callbacks(self):
-        cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=constants.get_checkpoint_path(self.feature),
+        cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=constants.get_checkpoint_path(self.test),
                                                          save_weights_only=True,
                                                          verbose=1)
         return [cp_callback]
@@ -93,16 +97,16 @@ class Model():
     def load_weights(self):
         try:
             self.model.load_weights(
-                constants.get_checkpoint_path(self.feature))
+                constants.get_checkpoint_path(self.test))
         except:
             print("No checkpoint found")
 
     def save(self):
         try:
             os.mkdir('models')
-            self.model.save('models/'+self.feature)
+            self.model.save('models/'+self.test)
         except:
-            self.model.save('models/'+self.feature)
+            self.model.save('models/'+self.test)
 
     def predict(self, data):
         return self.predict(data)

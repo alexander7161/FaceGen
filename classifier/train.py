@@ -10,16 +10,19 @@ parser.add_argument('--label', '-l', dest='label',
 parser.add_argument('--epochs', '-e', dest='epochs',
                     default=15, type=int,
                     help='set epochs for classifier (default: 15)')
+parser.add_argument('--test', '-t', dest='test',
+                    default=1, type=int,
+                    help='set epochs for classifier (default: 1)')
+
 
 args = parser.parse_args()
 
 
-model = Model(args.label, epochs=args.epochs)
+model = Model(args.label, epochs=args.epochs, test=args.test)
 model.load_weights()
 
 history = model.fit()
 model.save()
-print(history.history.keys())
 
 acc = history.history['accuracy']
 val_acc = history.history['val_accuracy']
