@@ -14,11 +14,16 @@ parser.add_argument('--test', '-t', dest='test',
                     default=1, type=str,
                     help='set epochs for classifier (default: 1)')
 
+parser.add_argument('--dataset', '-d', dest='dataset',
+                    default="ffhq", type=str,
+                    help='set dataset for classifier (default: ffhq)')
+
 
 args = parser.parse_args()
 
 
-model = Model(args.label, epochs=args.epochs, test=args.test)
+model = Model(args.label, epochs=args.epochs,
+              test=args.test, dataset=args.dataset)
 model.load_weights()
 
 history = model.fit()
