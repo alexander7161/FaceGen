@@ -11,7 +11,7 @@ parser.add_argument('--epochs', '-e', dest='epochs',
                     default=15, type=int,
                     help='set epochs for classifier (default: 15)')
 parser.add_argument('--test', '-t', dest='test',
-                    default=1, type=int,
+                    default=1, type=str,
                     help='set epochs for classifier (default: 1)')
 
 
@@ -23,6 +23,8 @@ model.load_weights()
 
 history = model.fit()
 model.save()
+
+# https://www.tensorflow.org/tutorials/images/classification#visualize_training_results
 
 acc = history.history['accuracy']
 val_acc = history.history['val_accuracy']

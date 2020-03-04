@@ -6,17 +6,18 @@ from constants import IMG_HEIGHT, IMG_WIDTH
 import constants
 import pandas as pd
 import os
-
+from datasets import get_dataset
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
 
 class Model():
-    def __init__(self, feature="gender", epochs=15, batch_size=2, test=1):
+    def __init__(self, feature, epochs, batch_size, test, dataset):
+        self.dataset = dataset
         self.feature = feature
         self.epochs = epochs
         self.batch_size = batch_size
-        self.train_generator, self.validation_generator = self.read_data(
-            feature)
+        self.train_generator, self.validation_generator = self.read_data(dataset,
+                                                                         feature)
         self.model = self.get_model()
         if test != 1:
             self.test = feature+str(test)
@@ -30,9 +31,8 @@ class Model():
                                                          verbose=1)
         return [cp_callback]
 
-    def read_data(self, feature):
-        train_df = pd.read_csv("./face_data/labels.csv", header=0)
-        train_df[feature] = train_df[feature].astype('str')
+    def read_data(self, dataset, feature):
+        train_df = get_dataset(dataset)
         train_datagen = ImageDataGenerator(rescale=1./255,
                                            shear_range=0.2,
                                            zoom_range=0.2,
@@ -68,6 +68,8 @@ class Model():
                    input_shape=(IMG_HEIGHT, IMG_WIDTH, 3)),
             MaxPooling2D(),
             Conv2D(32, 3, padding='same', activation='relu'),
+            MaxPooling2D(),
+            Conv2D(64, 3, padding='same', activation='relu'),
             MaxPooling2D(),
             Conv2D(64, 3, padding='same', activation='relu'),
             MaxPooling2D(),
