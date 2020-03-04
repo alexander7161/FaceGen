@@ -22,7 +22,7 @@ parser.add_argument('--dataset', '-d', dest='dataset',
 args = parser.parse_args()
 
 
-model = Model(args.label, epochs=args.epochs,
+model = Model(feature=args.label, epochs=args.epochs,
               test=args.test, dataset=args.dataset)
 model.load_weights()
 

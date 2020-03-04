@@ -11,7 +11,7 @@ os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
 
 class Model():
-    def __init__(self, feature, epochs, batch_size, test, dataset):
+    def __init__(self, test, dataset, feature, epochs, batch_size=10):
         self.dataset = dataset
         self.feature = feature
         self.epochs = epochs
