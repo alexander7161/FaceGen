@@ -1,4 +1,6 @@
 from model import Model
+from binary_model import BinaryModel
+from multiclass_model import MulticlassModel
 import constants
 from matplotlib import pyplot as plt
 from argparse import ArgumentParser
@@ -18,12 +20,20 @@ parser.add_argument('--dataset', '-d', dest='dataset',
                     default="ffhq", type=str,
                     help='set dataset for classifier (default: ffhq)')
 
+parser.add_argument('--multiclass', '-m', dest='multiclass',
+                    help='Should use multiclass classifier', action='store_true')
+
 
 args = parser.parse_args()
 
 
-model = Model(feature=args.label, epochs=args.epochs,
-              test=args.test, dataset=args.dataset)
+if args.multiclass:
+    model = MulticlassModel(feature=args.label, epochs=args.epochs,
+                            test=args.test, dataset=args.dataset)
+else:
+    model = BinaryModel(feature=args.label, epochs=args.epochs,
+                        test=args.test, dataset=args.dataset)
+
 model.load_weights()
 
 history = model.fit()

@@ -37,24 +37,7 @@ class Model():
         self.validation_generator = validation_generator
 
     def get_model(self):
-        model = Sequential([
-            Conv2D(16, 3, padding='same', activation='relu',
-                   input_shape=(IMG_HEIGHT, IMG_WIDTH, 3)),
-            MaxPooling2D(),
-            Conv2D(32, 3, padding='same', activation='relu'),
-            MaxPooling2D(),
-            Conv2D(64, 3, padding='same', activation='relu'),
-            MaxPooling2D(),
-            Flatten(),
-            Dense(512, activation='relu'),
-            Dense(1)
-        ])
-
-        model.compile(optimizer='adam',
-                      loss=tf.keras.losses.BinaryCrossentropy(
-                          from_logits=True),
-                      metrics=['accuracy'])
-        return model
+        pass
 
     def fit(self):
         return self.model.fit(
