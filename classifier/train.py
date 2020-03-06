@@ -29,10 +29,15 @@ model.load_weights()
 history = model.fit()
 model.save()
 
+print(history)
 # https://www.tensorflow.org/tutorials/images/classification#visualize_training_results
+try:
+    acc = history.history['accuracy']
+    val_acc = history.history['val_accuracy']
+except:
+    acc = history.history['acc']
+    val_acc = history.history['val_acc']
 
-acc = history.history['accuracy']
-val_acc = history.history['val_accuracy']
 
 loss = history.history['loss']
 val_loss = history.history['val_loss']

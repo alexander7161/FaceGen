@@ -1,7 +1,6 @@
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv2D, Flatten, Dropout, MaxPooling2D
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from constants import IMG_HEIGHT, IMG_WIDTH
 import constants
 import pandas as pd
@@ -11,13 +10,13 @@ os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
 
 class Model():
-    def __init__(self, test, dataset, feature, epochs, batch_size=10):
+    def __init__(self, test, dataset, feature, epochs, batch_size=32):
         self.dataset = dataset
         self.feature = feature
         self.epochs = epochs
         self.batch_size = batch_size
-        self.train_generator, self.validation_generator = self.read_data(dataset,
-                                                                         feature)
+        self.read_data(dataset,
+                       feature)
         self.model = self.get_model()
         if test != 1:
             self.test = feature+str(test)
@@ -32,35 +31,10 @@ class Model():
         return [cp_callback]
 
     def read_data(self, dataset, feature):
-        train_df = get_dataset(dataset)
-        train_datagen = ImageDataGenerator(rescale=1./255,
-                                           shear_range=0.2,
-                                           zoom_range=0.2,
-                                           horizontal_flip=True,
-                                           validation_split=0.2)
-        train_generator = train_datagen.flow_from_dataframe(
-            dataframe=train_df,
-            directory='face_data',
-            x_col="filename",
-            y_col=feature,
-            target_size=(
-                constants.IMG_HEIGHT, constants.IMG_WIDTH),
-            batch_size=self.batch_size,
-            class_mode='binary',
-            subset='training')
-
-        validation_generator = train_datagen.flow_from_dataframe(
-            dataframe=train_df,
-            directory='face_data',
-            x_col="filename",
-            y_col="gender",
-            target_size=(
-                constants.IMG_HEIGHT, constants.IMG_WIDTH),
-            batch_size=self.batch_size,
-            class_mode='binary',
-            subset='validation')
-
-        return train_generator, validation_generator
+        train_generator, validation_generator = get_dataset(
+            dataset, self.batch_size)
+        self.train_generator = train_generator
+        self.validation_generator = validation_generator
 
     def get_model(self):
         model = Sequential([
@@ -68,8 +42,6 @@ class Model():
                    input_shape=(IMG_HEIGHT, IMG_WIDTH, 3)),
             MaxPooling2D(),
             Conv2D(32, 3, padding='same', activation='relu'),
-            MaxPooling2D(),
-            Conv2D(64, 3, padding='same', activation='relu'),
             MaxPooling2D(),
             Conv2D(64, 3, padding='same', activation='relu'),
             MaxPooling2D(),

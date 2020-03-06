@@ -70,12 +70,10 @@ firebase-config.json
 
 classifier/__pycache__/
 classifier/face_data
+!classifier/face_data/main.py
 classifier/checkpoints
 classifier/saved_model
 classifier/models
 *.pyc
-
-
-classifier/checkpoints/gender/checkpoint
 
 .vscode/
