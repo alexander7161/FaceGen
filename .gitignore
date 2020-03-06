@@ -66,5 +66,14 @@ node_modules/
 
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 .DS_Store
+firebase-config.json
 
-frontend/src/fbConfig.ts
+classifier/__pycache__/
+classifier/face_data
+!classifier/face_data/main.py
+classifier/checkpoints
+classifier/saved_model
+classifier/models
+*.pyc
+
+.vscode/

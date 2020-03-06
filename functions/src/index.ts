@@ -12,10 +12,6 @@ const app = express();
 // Automatically allow cross-origin requests
 app.use(cors({ origin: true }));
 
-// Add middleware to authenticate requests
-// app.use(myMiddleware);
-
-// build multiple CRUD interfaces:
 app.post("/generateFace", firebaseAuthMiddleware, async (req, res) =>
   res.send(await generateFace(req, res))
 );
