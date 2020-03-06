@@ -1,6 +1,7 @@
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv2D, Flatten, Dropout, MaxPooling2D, Activation
+
 from constants import IMG_HEIGHT, IMG_WIDTH
 from model import Model
 from datasets import get_dataset
@@ -44,9 +45,7 @@ class MulticlassModel(Model):
             Dense(len(self.columns), activation='sigmoid'),
         ])
 
-        model.compile(optimizer='adam',
-                      loss=tf.keras.losses.BinaryCrossentropy(
-                          from_logits=True),
+        model.compile(tf.keras.optimizers.RMSprop(learning_rate=0.0001, decay=1e-6), loss="binary_crossentropy",
                       metrics=['accuracy'])
         return model
 
