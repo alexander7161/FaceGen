@@ -70,6 +70,7 @@ firebase-config.json
 
 classifier/__pycache__/
 classifier/face_data
+classifier/celeba-dataset
 !classifier/face_data/main.py
 classifier/checkpoints
 classifier/saved_model
