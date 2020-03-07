@@ -19,13 +19,13 @@ class Model():
                        feature)
         self.model = self.get_model()
         if test != 1:
-            self.test = feature+str(test)
+            self.testNo = feature+str(test)
         else:
-            self.test = feature
+            self.testNo = feature
         self.callbacks = self.get_callbacks()
 
     def get_callbacks(self):
-        cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=constants.get_checkpoint_path(self.test),
+        cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=constants.get_checkpoint_path(self.testNo),
                                                          save_weights_only=True,
                                                          verbose=1)
         return [cp_callback]
@@ -54,16 +54,16 @@ class Model():
     def load_weights(self):
         try:
             self.model.load_weights(
-                constants.get_checkpoint_path(self.test))
+                constants.get_checkpoint_path(self.testNo))
         except:
             print("No checkpoint found")
 
     def save(self):
         try:
             os.mkdir('models')
-            self.model.save('models/'+self.test)
+            self.model.save('models/'+self.testNo)
         except:
-            self.model.save('models/'+self.test)
+            self.model.save('models/'+self.testNo)
 
     def predict(self, data):
         return self.predict(data)

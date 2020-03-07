@@ -1,3 +1,4 @@
+import tensorflow as tf
 from model import Model
 from binary_model import BinaryModel
 from multiclass_model import MulticlassModel
@@ -26,6 +27,7 @@ parser.add_argument('--multiclass', '-m', dest='multiclass',
 
 args = parser.parse_args()
 
+print(tf.config.experimental.list_physical_devices(device_type=None))
 
 if args.multiclass:
     model = MulticlassModel(feature=args.label, epochs=args.epochs,
@@ -35,8 +37,8 @@ else:
                         test=args.test, dataset=args.dataset)
 
 model.load_weights()
-
 history = model.fit()
+print(model.test())
 model.save()
 
 print(history)
@@ -66,5 +68,6 @@ plt.plot(epochs_range, loss, label='Training Loss')
 plt.plot(epochs_range, val_loss, label='Validation Loss')
 plt.legend(loc='upper right')
 plt.title('Training and Validation Loss')
+plt.savefig('result.png')
 plt.show()
 model.evaluate()

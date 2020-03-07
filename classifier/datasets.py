@@ -40,10 +40,13 @@ def get_dataset(name, batch_size, feature="gender"):
 
     elif name == "ffhqmulticlass":
         train_df = pd.read_csv("./face_data/age_gender/labels.csv", header=0)
-        columns = ["gender", "age"]
         train_df = pd.concat([pd.DataFrame([pd.to_numeric(train_df[e], errors='coerce')
                                             for e in train_df.columns if e not in ['filename']]).T,
                               train_df[['filename']]], axis=1)
+        columns = ["gender", "child", "teen", "adult", "senior"]
+        # for columns in columns:
+        #     train_df[columns] = train_df[columns].astype('str')
+
         print(train_df.info())
         train_generator = train_datagen.flow_from_dataframe(
             dataframe=train_df,
@@ -81,11 +84,11 @@ def get_dataset(name, batch_size, feature="gender"):
             dataframe=test_df,
             directory="./face_data/age_gender_test",
             x_col="filename",
+            y_col=columns,
             target_size=(
                 constants.IMG_HEIGHT, constants.IMG_WIDTH),
             batch_size=batch_size,
-            class_mode=None,
-            subset='validation',
+            class_mode='raw',
             shuffle=False,
             seed=1)
 

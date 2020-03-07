@@ -10,11 +10,10 @@ from constants import IMG_HEIGHT, IMG_WIDTH
 
 
 class MulticlassModel(Model):
-    columns = ["gender", "age"]
+    columns = ["gender", "child", "teen", "adult", "senior"]
 
-    def __init__(self, test, dataset, feature, epochs, batch_size=32, columns=["gender", "age"]):
+    def __init__(self, test, dataset, feature, epochs, batch_size=32):
         super().__init__(test, dataset, feature, epochs, batch_size)
-        self.columns = columns
 
     def read_data(self, dataset, feature):
         train_generator, validation_generator, test_generator = get_dataset(
@@ -45,7 +44,7 @@ class MulticlassModel(Model):
             Dense(len(self.columns), activation='sigmoid'),
         ])
 
-        model.compile(tf.keras.optimizers.RMSprop(learning_rate=0.0001, decay=1e-6), loss="binary_crossentropy",
+        model.compile("adam", loss="binary_crossentropy",
                       metrics=['accuracy'])
         return model
 
@@ -61,16 +60,6 @@ class MulticlassModel(Model):
             callbacks=self.callbacks)
 
     def test(self):
-        STEP_SIZE_TEST = self.test_generator.n//self.test_generator.batch_size
-        self.test_generator.reset()
-
-        pred = self.model.predict(self.test_generator,
-                                  steps=STEP_SIZE_TEST,
-                                  verbose=1)
-        pred_bool = (pred > 0.5)
-        predictions = pred_bool.astype(int)
-        results = pd.DataFrame(predictions, columns=self.columns)
-        results["Filenames"] = self.test_generator.filenames
-        ordered_cols = ["Filenames"]+self.columns
-        results = results[ordered_cols]  # To get the same column order
-        results.to_csv("results.csv", index=False)
+        evaluation = self.model.evaluate(
+            self.test_generator, verbose=0)
+        return self.model.metrics_names, evaluation
