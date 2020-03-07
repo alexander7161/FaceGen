@@ -1,6 +1,9 @@
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv2D, Flatten, Dropout, MaxPooling2D
+from PIL import Image
+import numpy as np
+from skimage import transform
 from constants import IMG_HEIGHT, IMG_WIDTH
 import constants
 import pandas as pd
@@ -65,5 +68,23 @@ class Model():
         except:
             self.model.save('models/'+self.testNo)
 
-    def predict(self, data):
-        return self.predict(data)
+    def predict(self, filename):
+        np_image = Image.open(filename)
+        np_image = np.array(np_image).astype('float32')/255
+        np_image = transform.resize(np_image, (IMG_WIDTH, IMG_HEIGHT, 3))
+        np_image = np.expand_dims(np_image, axis=0)
+        pred = self.model.predict(np_image)
+        print(pred)
+        pred_bool = (pred > 0.5)
+        print(pred_bool)
+        result = []
+        for i, prediction in enumerate(pred_bool[0]):
+            if self.columns[i] == "gender":
+                if prediction:
+                    result.append("Female")
+                else:
+                    result.append("Male")
+            elif prediction:
+                result.append(self.columns[i])
+
+        return result

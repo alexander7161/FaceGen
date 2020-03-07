@@ -30,8 +30,8 @@ args = parser.parse_args()
 print(tf.config.experimental.list_physical_devices(device_type=None))
 
 if args.multiclass:
-    model = MulticlassModel(feature=args.label, epochs=args.epochs,
-                            test=args.test, dataset=args.dataset)
+    model = MulticlassModel(epochs=args.epochs,
+                            test=args.test)
 else:
     model = BinaryModel(feature=args.label, epochs=args.epochs,
                         test=args.test, dataset=args.dataset)

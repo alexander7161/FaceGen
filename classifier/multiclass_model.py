@@ -10,10 +10,10 @@ from constants import IMG_HEIGHT, IMG_WIDTH
 
 
 class MulticlassModel(Model):
-    columns = ["gender", "child", "teen", "adult", "senior"]
+    columns = ["gender", "teen", "senior", "adult", "child"]
 
-    def __init__(self, test, dataset, feature, epochs, batch_size=32):
-        super().__init__(test, dataset, feature, epochs, batch_size)
+    def __init__(self, test=1, epochs=1, batch_size=32):
+        super().__init__(test, "ffhqmulticlass", "gender", epochs, batch_size)
 
     def read_data(self, dataset, feature):
         train_generator, validation_generator, test_generator = get_dataset(
@@ -62,4 +62,4 @@ class MulticlassModel(Model):
     def test(self):
         evaluation = self.model.evaluate(
             self.test_generator, verbose=0)
-        return self.model.metrics_names, evaluation
+        return "Test results:", zip(self.model.metrics_names, evaluation)

@@ -43,7 +43,7 @@ def get_dataset(name, batch_size, feature="gender"):
         train_df = pd.concat([pd.DataFrame([pd.to_numeric(train_df[e], errors='coerce')
                                             for e in train_df.columns if e not in ['filename']]).T,
                               train_df[['filename']]], axis=1)
-        columns = ["gender", "child", "teen", "adult", "senior"]
+        columns = ["gender", "teen", "senior", "adult", "child"]
         # for columns in columns:
         #     train_df[columns] = train_df[columns].astype('str')
 
