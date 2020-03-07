@@ -74,17 +74,25 @@ class Model():
         np_image = transform.resize(np_image, (IMG_WIDTH, IMG_HEIGHT, 3))
         np_image = np.expand_dims(np_image, axis=0)
         pred = self.model.predict(np_image)
-        print(pred)
         pred_bool = (pred > 0.5)
-        print(pred_bool)
         result = []
-        for i, prediction in enumerate(pred_bool[0]):
+        i = 0
+        ages = ["teen", "senior", "adult", "child"]
+        while i < len(pred_bool[0]):
+            prediction = pred_bool[0][i]
             if self.columns[i] == "gender":
                 if prediction:
-                    result.append("Female")
+                    result.append("female")
                 else:
-                    result.append("Male")
+                    result.append("male")
+                i += 1
+            elif self.columns[i] in ages:
+                age_bools = pred_bool[0][1:5]
+                most_likely_age_i = np.argmax(age_bools)
+                result.append(ages[most_likely_age_i])
+                i += 4
             elif prediction:
                 result.append(self.columns[i])
+                i += 1
 
         return result

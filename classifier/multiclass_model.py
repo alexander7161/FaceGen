@@ -62,4 +62,5 @@ class MulticlassModel(Model):
     def test(self):
         evaluation = self.model.evaluate(
             self.test_generator, verbose=0)
-        return "Test results:", zip(self.model.metrics_names, evaluation)
+
+        return "Test results:", print([i for i in zip(self.model.metrics_names, evaluation)])
