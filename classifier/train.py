@@ -29,6 +29,9 @@ args = parser.parse_args()
 
 print(tf.config.experimental.list_physical_devices(device_type=None))
 
+print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
+
+
 if args.multiclass:
     model = MulticlassModel(epochs=args.epochs,
                             test=args.test)
