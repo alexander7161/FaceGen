@@ -25,7 +25,7 @@ class Model():
         if run_name:
             self.run_name = run_name
         else:
-            self.run_name = datetime.now().strftime("%d/%m/%Y-%H:%M:%S")
+            self.run_name = datetime.now().strftime("%d_%m_%Y-%H_%M_%S")
         self.load_training_data()
         self.load_test_data()
         self.model = self.get_model()
