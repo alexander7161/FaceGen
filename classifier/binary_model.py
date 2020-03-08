@@ -6,10 +6,16 @@ from model import Model
 
 
 class BinaryModel(Model):
-    def __init__(self, test, dataset, feature, epochs, batch_size=32):
-        Model.__init__(self, test, dataset, feature, epochs, batch_size)
+    """Binary CNN Classifier"""
+
+    def __init__(self, epochs,  batch_size, run_name):
+        Model.__init__(self, epochs,  batch_size, run_name)
 
     def get_model(self):
+        """
+        Structure from:
+        https://www.tensorflow.org/tutorials/images/classification
+        """
         model = Sequential([
             Conv2D(16, 3, padding='same', activation='relu',
                    input_shape=(IMG_HEIGHT, IMG_WIDTH, 3)),

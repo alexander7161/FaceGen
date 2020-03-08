@@ -75,6 +75,7 @@ classifier/celeba-dataset
 classifier/checkpoints
 classifier/saved_model
 classifier/models
+classifier/runs
 *.pyc
 
 .vscode/
