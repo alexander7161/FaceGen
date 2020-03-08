@@ -4,23 +4,13 @@ from tensorflow.keras.layers import Dense, Conv2D, Flatten, Dropout, MaxPooling2
 
 from constants import IMG_HEIGHT, IMG_WIDTH
 from model import Model
-from datasets import get_dataset
 import pandas as pd
-from constants import IMG_HEIGHT, IMG_WIDTH
 
 
 class MulticlassModel(Model):
-    columns = ["gender", "teen", "senior", "adult", "child"]
 
-    def __init__(self, test=1, epochs=1, batch_size=32):
-        super().__init__(test, "ffhqmulticlass", "gender", epochs, batch_size)
-
-    def read_data(self, dataset, feature):
-        train_generator, validation_generator, test_generator = get_dataset(
-            "ffhqmulticlass", self.batch_size)
-        self.train_generator = train_generator
-        self.validation_generator = validation_generator
-        self.test_generator = test_generator
+    def __init__(self, epochs,  batch_size, run_name):
+        super().__init__(epochs, batch_size, run_name)
 
     def get_model(self):
         model = Sequential([
@@ -46,21 +36,5 @@ class MulticlassModel(Model):
 
         model.compile("adam", loss="binary_crossentropy",
                       metrics=['accuracy'])
+
         return model
-
-    def fit(self):
-        STEP_SIZE_TRAIN = self.train_generator.n//self.train_generator.batch_size
-        STEP_SIZE_VALID = self.validation_generator.n//self.validation_generator.batch_size
-        return self.model.fit(
-            self.train_generator,
-            steps_per_epoch=STEP_SIZE_TRAIN,
-            validation_steps=STEP_SIZE_VALID,
-            validation_data=self.validation_generator,
-            epochs=self.epochs,
-            callbacks=self.callbacks)
-
-    def test(self):
-        evaluation = self.model.evaluate(
-            self.test_generator, verbose=0)
-
-        return "Test results:", print([i for i in zip(self.model.metrics_names, evaluation)])

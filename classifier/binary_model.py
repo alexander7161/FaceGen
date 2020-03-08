@@ -6,8 +6,8 @@ from model import Model
 
 
 class BinaryModel(Model):
-    def __init__(self, test, dataset, feature, epochs, batch_size=32):
-        Model.__init__(self, test, dataset, feature, epochs, batch_size)
+    def __init__(self, epochs,  batch_size, run_name):
+        Model.__init__(self, epochs,  batch_size, run_name)
 
     def get_model(self):
         model = Sequential([
