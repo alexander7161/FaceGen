@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 from binary_model import BinaryModel
-from multiclass_model import MulticlassModel
+from multiclass_model import MulticlassMultiLabelModel
 from sklearn.metrics import multilabel_confusion_matrix
 import numpy as np
 import pandas as pd
@@ -22,8 +22,8 @@ if args.binary:
     model = BinaryModel(feature=args.label, epochs=0,
                         test=args.test, dataset=args.dataset)
 else:
-    model = MulticlassModel(epochs=0,
-                            run_name=args.run_name, batch_size=1)
+    model = MulticlassMultiLabelModel(epochs=0,
+                                      run_name=args.run_name, batch_size=1)
 
 
 model.load_weights()

@@ -7,12 +7,17 @@ from model import Model
 import pandas as pd
 
 
-class MulticlassModel(Model):
+class MulticlassMultiLabelModel(Model):
+    """A CNN classifier that classifies multiple labels and multiple classes."""
 
     def __init__(self, epochs,  batch_size, run_name):
         super().__init__(epochs, batch_size, run_name)
 
     def get_model(self):
+        """
+        Structure inspired by comments from:
+        https://github.com/keras-team/keras/issues/741
+        """
         model = Sequential([
             Conv2D(32, (3, 3), padding='same',
                    input_shape=(IMG_HEIGHT, IMG_WIDTH, 3)),

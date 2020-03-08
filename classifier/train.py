@@ -1,7 +1,7 @@
 import tensorflow as tf
 from model import Model
 from binary_model import BinaryModel
-from multiclass_model import MulticlassModel
+from multiclass_model import MulticlassMultiLabelModel
 import constants
 from matplotlib import pyplot as plt
 from argparse import ArgumentParser
@@ -30,7 +30,7 @@ if args.binary:
         run_name=args.run_name,
         batch_size=args.batch_size)
 else:
-    model = MulticlassModel(
+    model = MulticlassMultiLabelModel(
         epochs=args.epochs,
         run_name=args.run_name,
         batch_size=args.batch_size)
