@@ -19,6 +19,10 @@ parser.add_argument('--binary', '-b', dest='binary',
 parser.add_argument('--batchsize', dest='batch_size',
                     type=int, default=32,
                     help='Should use binary classifier and label to classify.')
+parser.add_argument('--dataset','-d', dest='dataset',
+                    type=str, default="ffhq",
+                    help='Dataset to use.')
+
 
 args = parser.parse_args()
 
@@ -36,8 +40,10 @@ else:
     model = MulticlassMultiLabelModel(
         epochs=args.epochs,
         run_name=args.run_name,
-        batch_size=args.batch_size)
-
+        batch_size=args.batch_size,
+        dataset=args.dataset)
+        
+model.load_weights()
 model.fit()
 model.plot_training()
 print(model.evaluate())

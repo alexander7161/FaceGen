@@ -10,8 +10,8 @@ import pandas as pd
 class MulticlassMultiLabelModel(Model):
     """A CNN classifier that classifies multiple labels and multiple classes."""
 
-    def __init__(self, epochs,  batch_size, run_name):
-        super().__init__(epochs, batch_size, run_name)
+    def __init__(self, epochs,  batch_size, run_name, dataset):
+        super().__init__(epochs, batch_size, run_name, dataset)
 
     def get_model(self):
         """

@@ -17,22 +17,22 @@ os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
 class Model():
     """Abstract Class for classifier models"""
-    columns = ["gender", "teen", "senior", "adult", "child"]
 
-    def __init__(self, epochs, batch_size, run_name):
+    def __init__(self, epochs, batch_size, run_name, dataset):
+        self.dataset=dataset
         self.epochs = epochs
         self.batch_size = batch_size
         if run_name:
             self.run_name = run_name
         else:
             self.run_name = datetime.now().strftime("%d_%m_%Y-%H_%M_%S")
-        self.load_training_data()
+        self.load_training_data(dataset)
         self.load_test_data()
         self.model = self.get_model()
         self.callbacks = self.get_callbacks()
 
     def get_run_folder(self):
-        return "runs/"+self.run_name
+        return "runs/"+self.run_name+"_"+self.dataset
 
     def get_checkpoint_folder(self):
         return self.get_run_folder() + "/checkpoints/cp.ckpt"
@@ -48,13 +48,14 @@ class Model():
             verbose=1)
         return [cp_callback]
 
-    def load_training_data(self):
+    def load_training_data(self,dataset):
         """Load training and validation data generators"""
         from datasets import get_training_data
-        train_generator, validation_generator = get_training_data(
-            self.batch_size)
+        train_generator, validation_generator,columns = get_training_data(
+            self.batch_size,dataset)
         self.train_generator = train_generator
         self.validation_generator = validation_generator
+        self.columns= columns
 
     def load_test_data(self):
         """Load testing data generators"""
