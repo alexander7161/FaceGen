@@ -132,6 +132,9 @@ class Model():
 
         evaluation = self.model.evaluate(
             generator, verbose=0)
+        with open(self.get_run_folder()+'/accuracy.txt', 'w') as file:
+            file.write(' '.join([str(i) for i in zip(self.model.metrics_names, evaluation)]))
+        
 
         return "Test results:", [i for i in zip(self.model.metrics_names, evaluation)]
 
@@ -186,7 +189,7 @@ class Model():
         pred_bool = (pred > 0.5)
         result = []
         i = 0
-        ages = ["teen", "senior", "adult", "child"]
+        ages = [ "senior", "adult", "child"]
         while i < len(pred_bool[0]):
             prediction = pred_bool[0][i]
             if self.columns[i] == "gender":
