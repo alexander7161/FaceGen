@@ -26,6 +26,7 @@ jobs:
       script:
         - npm install --prefix ./functions/
         - npm run build --prefix ./functions/
+        - npm install --prefix ./frontend/
         - npm run build  --prefix ./frontend/
       if: branch = master OR branch = develop
       deploy:
