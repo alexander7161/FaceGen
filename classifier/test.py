@@ -31,12 +31,3 @@ print(model.evaluate())
 genderCf, ageCf = model.confusion_matrix()
 print(genderCf)
 print(ageCf)
-
-plt.figure()
-plot_confusion_matrix(ageCf, classes=["teen", "senior", "adult", "child"])
-plt.savefig(model.get_run_folder()+'/CmAge.png')
-plt.figure()
-plot_confusion_matrix(genderCf, classes=["Male", "Female"]
-                      )
-plt.savefig(model.get_run_folder()+'/CmGender.png')
-plt.show()
