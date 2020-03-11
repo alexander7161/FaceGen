@@ -1,10 +1,11 @@
 import tensorflow as tf
 from model import Model
 from binary_model import BinaryModel
-from multiclass_model import MulticlassMultiLabelModel
+from multiclass_model import MulticlassCNNModel,MulticlassNNModel,MulticlassCNNDropoutModel
 import constants
 from matplotlib import pyplot as plt
 from argparse import ArgumentParser
+import time
 
 parser = ArgumentParser()
 parser.add_argument('--epochs', '-e', dest='epochs',
@@ -13,8 +14,8 @@ parser.add_argument('--epochs', '-e', dest='epochs',
 parser.add_argument('--runname', '-n', dest='run_name',
                     type=str,
                     help='Name for this run, will otherwise not try to load model.')
-parser.add_argument('--binary', '-b', dest='binary',
-                    type=str,
+parser.add_argument('--m', '-m', dest='model',
+                    type=str, default="cnn",
                     help='Should use binary classifier and label to classify.')
 parser.add_argument('--batchsize', dest='batch_size',
                     type=int, default=32,
@@ -31,13 +32,31 @@ print(tf.config.experimental.list_physical_devices(device_type=None))
 print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
 
 
-if args.binary:
+if args.model =="binary":
     model = BinaryModel(
         epochs=args.epochs,
         run_name=args.run_name,
         batch_size=args.batch_size)
+elif args.model == "nn":
+    model = MulticlassNNModel(
+        epochs=args.epochs,
+        run_name=args.run_name,
+        batch_size=args.batch_size,
+        dataset=args.dataset)
+elif args.model == "cnn":
+    model = MulticlassCNNModel(
+        epochs=args.epochs,
+        run_name=args.run_name,
+        batch_size=args.batch_size,
+        dataset=args.dataset)
+elif args.model == "dropout":
+    model = MulticlassCNNDropoutModel(
+        epochs=args.epochs,
+        run_name=args.run_name,
+        batch_size=args.batch_size,
+        dataset=args.dataset)
 else:
-    model = MulticlassMultiLabelModel(
+    model = MulticlassCNNOptimisedModel(
         epochs=args.epochs,
         run_name=args.run_name,
         batch_size=args.batch_size,
