@@ -21,7 +21,7 @@ class Model():
     """Abstract Class for classifier models"""
 
     def __init__(self, epochs, batch_size, run_name, dataset):
-        self.dataset=dataset
+        self.dataset = dataset
         self.epochs = epochs
         self.batch_size = batch_size
         if run_name:
@@ -50,14 +50,14 @@ class Model():
             verbose=1)
         return [cp_callback]
 
-    def load_training_data(self,dataset):
+    def load_training_data(self, dataset):
         """Load training and validation data generators"""
         from datasets import get_training_data
-        train_generator, validation_generator,columns = get_training_data(
-            self.batch_size,dataset)
+        train_generator, validation_generator, columns = get_training_data(
+            self.batch_size, dataset)
         self.train_generator = train_generator
         self.validation_generator = validation_generator
-        self.columns= columns
+        self.columns = columns
 
     def load_test_data(self):
         """Load testing data generators"""
@@ -174,8 +174,7 @@ class Model():
             ageCf, classes=["senior", "adult", "child"])
         plt.savefig(self.get_run_folder()+'/CmAge.png')
         plt.figure()
-        plot_confusion_matrix(genderCf, classes=["Male", "Female"]
-                              )
+        plot_confusion_matrix(genderCf, classes=["Male", "Female"])
         plt.savefig(self.get_run_folder()+'/CmGender.png')
 
         return genderCf, ageCf
@@ -202,7 +201,7 @@ class Model():
         pred_bool = (pred > 0.5)
         result = []
         i = 0
-        ages = [ "senior", "adult", "child"]
+        ages = ["senior", "adult", "child"]
         while i < len(pred_bool[0]):
             prediction = pred_bool[0][i]
             if self.columns[i] == "gender":
