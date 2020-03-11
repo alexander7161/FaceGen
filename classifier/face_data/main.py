@@ -6,17 +6,20 @@ PATH = os.path.dirname(__file__)
 # Gender classification
 labels = {'male': 0, 'female': 1}
 # Gender and age classification
-ages = {'child': 0, 'teen': 1, 'adult': 2, 'senior': 3}
+ages = ['senior', 'adult', 'child']
 labels = {}
-for age, value in ages.items():
-    labels['male_'+age] = [0, value]
-    labels['female_'+age] = [1, value]
+for i, age in enumerate(ages):
+    ageList = [0, 0, 0]
+    ageList[i] = 1
+    labels['male_'+age] = [0]+ageList
+    labels['female_'+age] = [1]+ageList
+
 
 with open('labels.csv', 'a') as fd:
     writer = csv.writer(fd)
-    row = ["filename"]
-    for label, value in labels.items():
-        row.extend(label)
+    row = ["filename", "gender"]
+    for age in ages:
+        row.extend([age])
     writer.writerow(row)
 # Save CSV with image
 for label, value in labels.items():
