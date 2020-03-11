@@ -11,6 +11,8 @@ from sklearn.metrics import multilabel_confusion_matrix, confusion_matrix
 from matplotlib import pyplot as plt
 from datetime import datetime
 from utils import plot_confusion_matrix
+import time
+import csv
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
@@ -71,6 +73,7 @@ class Model():
         """Trains the model"""
         STEP_SIZE_TRAIN = self.train_generator.n//self.train_generator.batch_size
         STEP_SIZE_VALID = self.validation_generator.n//self.validation_generator.batch_size
+        start_time = time.time()
         self.history = self.model.fit(
             self.train_generator,
             steps_per_epoch=STEP_SIZE_TRAIN,
@@ -78,6 +81,9 @@ class Model():
             validation_data=self.validation_generator,
             epochs=self.epochs,
             callbacks=self.callbacks)
+        with open(self.get_run_folder()+'/runtime.txt', 'w') as file:
+            file.write("--- %.2f seconds ---" % (time.time() - start_time))
+
 
     def plot_training(self):
         """
@@ -122,6 +128,13 @@ class Model():
         filename = datetime.now().strftime("%d_%m_%Y-%H_%M_%S")+".png"
         plt.savefig(output_dir + filename)
 
+        with open(output_dir + "data.csv", "w") as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(["epoch", "accuracy", "val_accuracy"])
+            for epoch, accuracy,valAccuracy in zip(epochs_range, acc, val_acc):
+                writer.writerow([epoch, accuracy, valAccuracy])
+
+
     def evaluate(self, testing_data=True):
         generator = self.validation_generator
 
@@ -132,6 +145,9 @@ class Model():
 
         evaluation = self.model.evaluate(
             generator, verbose=0)
+        with open(self.get_run_folder()+'/accuracy.txt', 'w') as file:
+            file.write(' '.join([str(i) for i in zip(self.model.metrics_names, evaluation)]))
+        
 
         return "Test results:", [i for i in zip(self.model.metrics_names, evaluation)]
 
