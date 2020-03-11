@@ -23,7 +23,9 @@ if args.binary:
                         test=args.test, dataset=args.dataset)
 else:
     model = MulticlassMultiLabelModel(epochs=0,
-                                      run_name=args.run_name, batch_size=1)
+                                      run_name=args.run_name,
+                                      batch_size=1,
+                                      dataset="ffhq")
 
 
 model.load_weights()
