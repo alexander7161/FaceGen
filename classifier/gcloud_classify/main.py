@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from PIL import Image
 from google.cloud import storage, firestore
@@ -12,17 +13,29 @@ firestore_client = firestore.Client()
 bucket = storage_client.bucket("facegen-fc9de.appspot.com")
 
 
+def get_temp_file(file_name):
+    return os.path.join(tempfile.gettempdir(), file_name)
+
+
+files = ["model/saved_model.pb", "model/variables/variables.data-00000-of-00002",
+         "model/variables/variables.data-00001-of-00002", "model/variables/variables.index"]
+
+
 def download_model():
-    blobs = bucket.list_blobs(prefix="model/")  # Get list of files
-    for blob in blobs:
-        filename = blob.name.replace('/', '_')
-        blob.download_to_filename("model/" + filename)  # Download
+    try:
+        os.mkdir(get_temp_file("model"))
+        os.mkdir(get_temp_file("model/variables"))
+    except:
+        pass
+    for file in files:
+        blob = bucket.blob(file)
+        blob.download_to_filename(get_temp_file(file))
     print("model downloaded")
 
 
 def download_face_from_firestore(ref):
     blob = bucket.blob(ref)
-    blob.download_to_filename("face.jpg")
+    blob.download_to_filename(get_temp_file("face.jpg"))
     print("face downloaded")
 
 
@@ -31,12 +44,13 @@ def update_firestore(ref, labels):
 
 
 def classify(event, context):
+    download_model()
     columns = ["gender", "senior", "adult", "child"]
     firestore_face_ref = base64.b64decode(event['data']).decode('utf-8')
     storage_face_ref = firestore_face_ref + ".jpg"
     download_face_from_firestore(storage_face_ref)
-    model = tf.keras.models.load_model('model')
-    np_image = Image.open("face.jpg")
+    model = tf.keras.models.load_model(get_temp_file('model'))
+    np_image = Image.open(get_temp_file("face.jpg"))
     np_image = np.array(np_image).astype('float32')/255
     np_image = transform.resize(np_image, (150, 150, 3))
     np_image = np.expand_dims(np_image, axis=0)
