@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { facesSelector } from "../store/faces/selectors";
+import { facesSelector, facesLoadingSelector } from "../store/faces/selectors";
 import {
   CircularProgress,
   GridListTile,
@@ -104,8 +104,18 @@ const Face = ({ f }: { f: GeneratedFaceData }) => {
   );
 };
 
+const CenteredCicularProgress = styled(CircularProgress)`
+  display: block;
+  margin: auto;
+`;
+
 const FacesList = () => {
   const faces = useSelector(facesSelector);
+  const facesLoading = useSelector(facesLoadingSelector);
+  if (facesLoading) {
+    return <CenteredCicularProgress />;
+  }
+
   if (!faces || faces.length === 0) {
     return <div>No Faces yet</div>;
   }
