@@ -6,17 +6,17 @@ from constants import IMG_HEIGHT, IMG_WIDTH
 from model import Model
 import pandas as pd
 
+
 class MulticlassNNModel(Model):
-    """A Neural Network classifier
-        One hidden layer consisting """
+    """A Neural Network classifier that classifies multiple labels and multiple classes."""
 
     def __init__(self, epochs,  batch_size, run_name, dataset):
         super().__init__(epochs, batch_size, run_name, dataset)
 
     def get_model(self):
         """
-        Structure inspired by comments from:
-        https://github.com/keras-team/keras/issues/741
+        Simple Neural Network
+        2 fully-connected Hidden layers.
         """
         model = Sequential([
             Flatten(input_shape=(IMG_HEIGHT, IMG_WIDTH, 3)),
@@ -26,10 +26,12 @@ class MulticlassNNModel(Model):
             Dense(len(self.columns), activation='sigmoid'),
         ])
 
+        # Binary_crossentropy from https://github.com/keras-team/keras/issues/741
         model.compile("adam", loss="binary_crossentropy",
                       metrics=['accuracy'])
 
         return model
+
 
 class MulticlassCNNModel(Model):
     """A CNN classifier that classifies multiple labels and multiple classes."""
@@ -38,10 +40,6 @@ class MulticlassCNNModel(Model):
         super().__init__(epochs, batch_size, run_name, dataset)
 
     def get_model(self):
-        """
-        Structure inspired by comments from:
-        https://github.com/keras-team/keras/issues/741
-        """
         model = Sequential([
             Conv2D(32, (3, 3), padding='same',
                    input_shape=(IMG_HEIGHT, IMG_WIDTH, 3)),
@@ -56,20 +54,22 @@ class MulticlassCNNModel(Model):
             Dense(len(self.columns), activation='sigmoid'),
         ])
 
+        # Binary_crossentropy from https://github.com/keras-team/keras/issues/741
         model.compile("adam", loss="binary_crossentropy",
                       metrics=['accuracy'])
 
         return model
+
 
 class MulticlassCNNDropoutModel(Model):
     """A CNN classifier that classifies multiple labels and multiple classes."""
+
     def __init__(self, epochs,  batch_size, run_name, dataset):
         super().__init__(epochs, batch_size, run_name, dataset)
 
     def get_model(self):
         """
-        Structure inspired by comments from:
-        https://github.com/keras-team/keras/issues/741
+        Dropout layers added.
         """
         model = Sequential([
             Conv2D(32, (3, 3), padding='same',
@@ -92,15 +92,16 @@ class MulticlassCNNDropoutModel(Model):
 
         return model
 
+
 class MulticlassCNNOptimisedModel(Model):
     """A CNN classifier that classifies multiple labels and multiple classes."""
+
     def __init__(self, epochs,  batch_size, run_name, dataset):
         super().__init__(epochs, batch_size, run_name, dataset)
 
     def get_model(self):
         """
-        Structure inspired by comments from:
-        https://github.com/keras-team/keras/issues/741
+        Activation layers added
         """
         model = Sequential([
             Conv2D(32, (3, 3), padding='same',
@@ -123,6 +124,7 @@ class MulticlassCNNOptimisedModel(Model):
             Dense(len(self.columns), activation='sigmoid'),
         ])
 
+        # Binary_crossentropy from https://github.com/keras-team/keras/issues/741
         model.compile("adam", loss="binary_crossentropy",
                       metrics=['accuracy'])
 

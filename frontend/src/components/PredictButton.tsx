@@ -1,14 +1,15 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import Add from "@material-ui/icons/Add";
 import { Fab, CircularProgress } from "@material-ui/core";
-import { predictionLoadingSelector } from "../store/classifier/selector";
-import { predictImage } from "../store/classifier";
-
-const AddIcon = styled(Add)`
-  margin-right: 4px;
-`;
+import {
+  predictingSelector,
+  modelLoadingSelector
+} from "../store/classifier/selector";
+import {
+  startWebcamPrediction,
+  stopWebcamPrediction
+} from "../store/classifier";
 
 const AbsoluteFab = styled(Fab)`
   position: fixed;
@@ -19,17 +20,14 @@ const AbsoluteFab = styled(Fab)`
 
 const PredictButton = () => {
   const dispatch = useDispatch();
-  const predictionLoading = useSelector(predictionLoadingSelector);
+  const predicting = useSelector(predictingSelector);
+  const modelLoading = useSelector(modelLoadingSelector);
 
   const predict = () => {
-    let image = document.getElementById("webcam");
-    if (image) {
-      dispatch(predictImage(image as HTMLVideoElement));
+    if (predicting) {
+      dispatch(stopWebcamPrediction());
     } else {
-      while (!image) {
-        image = document.getElementById("webcam");
-        dispatch(predictImage(image as HTMLVideoElement));
-      }
+      dispatch(startWebcamPrediction());
     }
   };
   return (
@@ -37,9 +35,9 @@ const PredictButton = () => {
       onClick={predict}
       variant="extended"
       color="primary"
-      disabled={predictionLoading}
+      disabled={modelLoading}
     >
-      {predictionLoading ? <CircularProgress /> : <>Predict</>}
+      {modelLoading ? <CircularProgress /> : predicting ? "Stop" : "Start"}
     </AbsoluteFab>
   );
 };

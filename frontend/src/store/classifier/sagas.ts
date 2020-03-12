@@ -1,12 +1,20 @@
-import { takeLatest, put, takeEvery, select, take } from "redux-saga/effects";
+import {
+  takeLatest,
+  put,
+  select,
+  take,
+  fork,
+  cancel
+} from "redux-saga/effects";
 import * as tf from "@tensorflow/tfjs";
 import {
   loadModelSuccess,
-  predictImage,
   loadModel,
   loadModelFailure,
   predictionSuccess,
-  predictionFailure
+  predictionFailure,
+  startWebcamPrediction,
+  stopWebcamPrediction
 } from ".";
 import { classifierModelSelector, modelLoadedSelector } from "./selector";
 
@@ -19,17 +27,16 @@ function* loadModelSaga() {
   }
 }
 
-function* predictImageSaga({
-  payload: image
-}: ReturnType<typeof predictImage>) {
-  try {
-    const modelLoaded: boolean = yield select(modelLoadedSelector);
-    let model: tf.LayersModel | null = yield select(classifierModelSelector);
-    if (!modelLoaded) {
-      yield put(loadModel());
-      const { payload } = yield take(loadModelSuccess);
-      model = payload;
-    }
+function* predictionTaskSaga() {
+  let image = document.getElementById("webcam") as HTMLVideoElement;
+  const modelLoaded: boolean = yield select(modelLoadedSelector);
+  let model: tf.LayersModel | null = yield select(classifierModelSelector);
+  if (!modelLoaded) {
+    yield put(loadModel());
+    const { payload } = yield take(loadModelSuccess);
+    model = payload;
+  }
+  while (true) {
     let tensor = tf.browser
       .fromPixels(image)
       .resizeNearestNeighbor([150, 150])
@@ -51,6 +58,16 @@ function* predictImageSaga({
     const age = classes[ageIndex[0] + 1];
     const labels = [gender, age];
     yield put(predictionSuccess(labels));
+  }
+}
+
+function* predictImageSaga() {
+  try {
+    while (yield take(startWebcamPrediction)) {
+      const predictionTask = yield fork(predictionTaskSaga);
+      yield take(stopWebcamPrediction);
+      yield cancel(predictionTask);
+    }
   } catch (e) {
     yield put(predictionFailure(e));
   }
@@ -58,5 +75,5 @@ function* predictImageSaga({
 
 export default function* root() {
   yield takeLatest(loadModel, loadModelSaga);
-  yield takeEvery(predictImage, predictImageSaga);
+  yield fork(predictImageSaga);
 }

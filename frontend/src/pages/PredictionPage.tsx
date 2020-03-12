@@ -1,14 +1,12 @@
 import React from "react";
-import { Container, CircularProgress, Button, Chip } from "@material-ui/core";
+import { Container, Chip } from "@material-ui/core";
 import styled from "styled-components";
 import WebcamCapture from "../components/Webcam";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import {
   predictionSelector,
-  predictionErrorSelector,
-  predictionLoadingSelector
+  predictionErrorSelector
 } from "../store/classifier/selector";
-import { predictImage } from "../store/classifier";
 import PredictButton from "../components/PredictButton";
 const StyledContainer = styled(Container)`
   margin-bottom: 64px;
