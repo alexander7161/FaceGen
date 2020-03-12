@@ -3,5 +3,5 @@ Pillow
 scipy
 google-cloud-storage
 google-cloud-firestore
-tensorflow==1.15
+tensorflow==1.15.2
 scikit-image
