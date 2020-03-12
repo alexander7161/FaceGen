@@ -6,10 +6,6 @@ import { Fab, CircularProgress } from "@material-ui/core";
 import { predictionLoadingSelector } from "../store/classifier/selector";
 import { predictImage } from "../store/classifier";
 
-const AddIcon = styled(Add)`
-  margin-right: 4px;
-`;
-
 const AbsoluteFab = styled(Fab)`
   position: fixed;
   bottom: 24px;

@@ -8,6 +8,13 @@ import Link from "./Link";
 
 const TitleContainer = styled.div`
   margin-right: auto;
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+`;
+
+const SubTitleLink = styled(Link)`
+  margin-left: 20px;
 `;
 
 const Title = () => {
@@ -16,6 +23,9 @@ const Title = () => {
       <Link to="/">
         <Typography variant="h6">FaceGen</Typography>
       </Link>
+      <SubTitleLink to="/predict">
+        <Typography variant="subtitle1">Webcam</Typography>
+      </SubTitleLink>
     </TitleContainer>
   );
 };
