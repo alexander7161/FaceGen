@@ -20,7 +20,7 @@ os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 class Model():
     """Abstract Class for classifier models"""
 
-    def __init__(self, epochs, batch_size, run_name, dataset):
+    def __init__(self, epochs, batch_size, run_name, dataset,shuffle):
         self.dataset=dataset
         self.epochs = epochs
         self.batch_size = batch_size
@@ -28,7 +28,7 @@ class Model():
             self.run_name = run_name
         else:
             self.run_name = datetime.now().strftime("%d_%m_%Y-%H_%M_%S")
-        self.load_training_data(dataset)
+        self.load_training_data(dataset, shuffle)
         self.load_test_data()
         self.model = self.get_model()
         self.callbacks = self.get_callbacks()
@@ -50,11 +50,11 @@ class Model():
             verbose=1)
         return [cp_callback]
 
-    def load_training_data(self,dataset):
+    def load_training_data(self,dataset,shuffle):
         """Load training and validation data generators"""
         from datasets import get_training_data
         train_generator, validation_generator,columns = get_training_data(
-            self.batch_size,dataset)
+            self.batch_size,dataset, shuffle)
         self.train_generator = train_generator
         self.validation_generator = validation_generator
         self.columns= columns

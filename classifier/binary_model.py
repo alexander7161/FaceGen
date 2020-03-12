@@ -8,8 +8,8 @@ from model import Model
 class BinaryModel(Model):
     """Binary CNN Classifier"""
 
-    def __init__(self, epochs,  batch_size, run_name):
-        Model.__init__(self, epochs,  batch_size, run_name)
+    def __init__(self, epochs,  batch_size, run_name,shuffle):
+        Model.__init__(self, epochs,  batch_size, run_name,shuffle)
 
     def get_model(self):
         """
