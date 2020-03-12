@@ -5,11 +5,13 @@ import { History } from "history";
 import UserReducer from "./user";
 import FacesReducer from "./faces";
 import GeneratorReducer from "./generator";
+import ClassifierReducer from "./classifier";
 
 export default (history: History) =>
   combineReducers({
     router: connectRouter(history),
     user: UserReducer,
     faces: FacesReducer,
-    generator: GeneratorReducer
+    generator: GeneratorReducer,
+    classifier: ClassifierReducer
   });

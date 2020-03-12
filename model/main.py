@@ -8,7 +8,7 @@ import chainer
 from chainer import Variable
 from PIL import Image
 from net import StyleGenerator, MappingNetwork
-from google.cloud import storage, firestore
+from google.cloud import storage, firestore, pubsub_v1
 import tempfile
 import base64
 import json
@@ -16,6 +16,10 @@ import time
 
 storage_client = storage.Client()
 firestore_client = firestore.Client()
+publisher = pubsub_v1.PublisherClient()
+
+topic_path = publisher.topic_path("facegen-fc9de", "label-face")
+
 
 bucket = storage_client.bucket("facegen-fc9de.appspot.com")
 
@@ -106,13 +110,19 @@ def upload_to_storage(image, ref, storageRef):
 
 def update_firestore(ref, storageRef, error=False):
     face_doc = {"complete": True,
-                "timeCompleted": firestore.SERVER_TIMESTAMP, "storageRef": storageRef}
+                "timeCompleted": firestore.SERVER_TIMESTAMP,
+                "storageRef": storageRef,
+                "labelsLoading": True}
     if error:
         face_doc["error"] = True
         face_doc["complete"] = False
         face_doc["timeCompleted"] = None
         face_doc["storageRef"] = None
     firestore_client.document(ref).set(face_doc, merge=True)
+
+
+def publish_label_request(ref):
+    publisher.publish(topic_path, data=ref.encode("utf-8"))
 
 
 def subscribe(event, context):
@@ -130,5 +140,7 @@ def subscribe(event, context):
         upload_to_storage(Image.fromarray(
             x), firestore_face_ref, storage_face_ref)
         update_firestore(firestore_face_ref, storage_face_ref)
+        publish_label_request(firestore_face_ref)
     except:
+        print("Unexpected error:", sys.exc_info()[0])
         update_firestore(firestore_face_ref, storage_face_ref, True)

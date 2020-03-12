@@ -1,0 +1,7 @@
+h5py
+Pillow
+scipy
+google-cloud-storage
+google-cloud-firestore
+tensorflow==1.15
+scikit-image
