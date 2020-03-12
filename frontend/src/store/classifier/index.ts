@@ -7,7 +7,7 @@ const initialState: {
   model: null | tf.LayersModel;
   modelLoaded: boolean;
   prediction?: string[];
-  predictionLoading: boolean;
+  prediciting: boolean;
   predictionError: null | Error;
 } = {
   loading: false,
@@ -15,7 +15,7 @@ const initialState: {
   model: null,
   modelLoaded: false,
   prediction: undefined,
-  predictionLoading: false,
+  prediciting: false,
   predictionError: null
 };
 
@@ -38,25 +38,19 @@ const classifierSlice = createSlice({
       state.error = action.payload;
       state.modelLoaded = false;
     },
-    predictImage(
-      state,
-      action: PayloadAction<
-        | tf.backend_util.PixelData
-        | ImageData
-        | HTMLImageElement
-        | HTMLCanvasElement
-        | HTMLVideoElement
-      >
-    ) {
-      state.predictionLoading = true;
+    startWebcamPrediction(state) {
+      state.prediciting = true;
+      state.predictionError = null;
+    },
+    stopWebcamPrediction(state) {
+      state.prediciting = false;
+      state.prediction = undefined;
       state.predictionError = null;
     },
     predictionSuccess(state, action: PayloadAction<string[]>) {
       state.prediction = action.payload;
-      state.predictionLoading = false;
     },
     predictionFailure(state, action: PayloadAction<Error>) {
-      state.predictionLoading = false;
       state.predictionError = action.payload;
     }
   }
@@ -68,7 +62,8 @@ export const {
   loadModel,
   loadModelSuccess,
   loadModelFailure,
-  predictImage,
+  startWebcamPrediction,
+  stopWebcamPrediction,
   predictionSuccess,
   predictionFailure
 } = actions;

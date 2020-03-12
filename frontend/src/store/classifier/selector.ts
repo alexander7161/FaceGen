@@ -11,7 +11,7 @@ export const modelLoadingSelector = (state: AppState) =>
 
 export const predictionSelector = (state: AppState) =>
   state.classifier.prediction;
-export const predictionLoadingSelector = (state: AppState) =>
-  state.classifier.predictionLoading;
+export const predictingSelector = (state: AppState) =>
+  state.classifier.prediciting;
 export const predictionErrorSelector = (state: AppState) =>
   state.classifier.predictionError;
