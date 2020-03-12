@@ -23,44 +23,53 @@ parser.add_argument('--batchsize', dest='batch_size',
 parser.add_argument('--dataset','-d', dest='dataset',
                     type=str, default="ffhq",
                     help='Dataset to use.')
-
+parser.add_argument('--shuffle','-s', dest='shuffle',
+                    action='store_true',
+                    help='Should the dataset be shuffled.')
 
 args = parser.parse_args()
 
-print(tf.config.experimental.list_physical_devices(device_type=None))
+# print(tf.config.experimental.list_physical_devices(device_type=None))
 
-print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
+# print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
+
+print("training: "+args.run_name)
 
 
 if args.model =="binary":
     model = BinaryModel(
         epochs=args.epochs,
         run_name=args.run_name,
-        batch_size=args.batch_size)
+        batch_size=args.batch_size,
+        shuffle=args.shuffle)
 elif args.model == "nn":
     model = MulticlassNNModel(
         epochs=args.epochs,
         run_name=args.run_name,
         batch_size=args.batch_size,
-        dataset=args.dataset)
+        dataset=args.dataset,
+        shuffle=args.shuffle)
 elif args.model == "cnn":
     model = MulticlassCNNModel(
         epochs=args.epochs,
         run_name=args.run_name,
         batch_size=args.batch_size,
-        dataset=args.dataset)
+        dataset=args.dataset,
+        shuffle=args.shuffle)
 elif args.model == "dropout":
     model = MulticlassCNNDropoutModel(
         epochs=args.epochs,
         run_name=args.run_name,
         batch_size=args.batch_size,
-        dataset=args.dataset)
+        dataset=args.dataset,
+        shuffle=args.shuffle)
 else:
     model = MulticlassCNNOptimisedModel(
         epochs=args.epochs,
         run_name=args.run_name,
         batch_size=args.batch_size,
-        dataset=args.dataset)
+        dataset=args.dataset,
+        shuffle=args.shuffle)
         
 model.load_weights()
 model.fit()
