@@ -57,7 +57,16 @@ const FaceContainer = styled(GridListTile)`
   width: 100%;
 `;
 
-const LabelContainer = ({ f }: { f: GeneratedFaceData }) => {
+const LabelContainer = ({
+  f,
+  error
+}: {
+  f: GeneratedFaceData;
+  error: boolean;
+}) => {
+  if (error) {
+    return null;
+  }
   if (f.labelsLoading) {
     return <LinearProgress />;
   } else if (f.labelsLoading === false) {
@@ -86,7 +95,7 @@ const FaceMenu = ({
   const deleteFaceFunction = () => {
     const dateNow = new Date();
     dateNow.setMinutes(dateNow.getMinutes() - 5);
-    if (f.complete) {
+    if (f.complete || error) {
       if (window.confirm("Are you sure you want to delete this image?")) {
         dispatch(deleteFace(f.id));
       }
@@ -139,7 +148,7 @@ const FaceMenu = ({
         <MenuItem
           aria-label={`delete ${f.id}`}
           onClick={deleteFaceFunction}
-          disabled={!f.complete}
+          disabled={!f.complete && !error}
         >
           <ListItemIcon>
             <DeleteIcon fontSize="small" />
@@ -165,7 +174,7 @@ const Face = ({ f }: { f: GeneratedFaceData }) => {
           hour: "2-digit",
           minute: "2-digit"
         })}
-        subtitle={<LabelContainer f={f} />}
+        subtitle={<LabelContainer f={f} error={error} />}
         actionIcon={<FaceMenu f={f} imageURL={imageURL} error={error} />}
       />
     </FaceContainer>
