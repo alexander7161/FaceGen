@@ -4,7 +4,8 @@ import {
   select,
   take,
   fork,
-  cancel
+  cancel,
+  call
 } from "redux-saga/effects";
 import * as tf from "@tensorflow/tfjs";
 import {
@@ -17,6 +18,7 @@ import {
   stopWebcamPrediction
 } from ".";
 import { classifierModelSelector, modelLoadedSelector } from "./selector";
+import { eventChannel } from "redux-saga";
 
 function* loadModelSaga() {
   try {
@@ -25,6 +27,17 @@ function* loadModelSaga() {
   } catch (error) {
     yield put(loadModelFailure(error));
   }
+}
+
+function timer() {
+  return eventChannel(emitter => {
+    const iv = setInterval(() => {
+      emitter("");
+    }, 1000);
+    return () => {
+      clearInterval(iv);
+    };
+  });
 }
 
 function* predictionTaskSaga() {
@@ -36,28 +49,34 @@ function* predictionTaskSaga() {
     const { payload } = yield take(loadModelSuccess);
     model = payload;
   }
-  while (true) {
-    let tensor = tf.browser
-      .fromPixels(image)
-      .resizeNearestNeighbor([150, 150])
-      .toFloat()
-      .expandDims();
-    const result = model!.predict(tensor);
-    const predictions:
-      | Float32Array
-      | Int32Array
-      | Uint8Array = yield (result as tf.Tensor<tf.Rank>)
-      .asType("float32")
-      .data();
-    let classes = ["gender", "senior", "adult", "child"];
+  const chan = yield call(timer);
 
-    const gender = predictions[0] === 1 ? "female" : "male";
-    const ageIndex: tf.backend_util.TypedArray = yield tf
-      .argMax(predictions.slice(1, predictions.length))
-      .data();
-    const age = classes[ageIndex[0] + 1];
-    const labels = [gender, age];
-    yield put(predictionSuccess(labels));
+  try {
+    while (true) {
+      yield take(chan);
+      let tensor = tf.browser
+        .fromPixels(image)
+        .resizeNearestNeighbor([150, 150])
+        .toFloat()
+        .expandDims();
+      const result = model!.predict(tensor);
+      const predictions:
+        | Float32Array
+        | Int32Array
+        | Uint8Array = yield (result as tf.Tensor<tf.Rank>)
+        .asType("float32")
+        .data();
+      let classes = ["gender", "senior", "adult", "child"];
+
+      const gender = predictions[0] === 1 ? "female" : "male";
+      const ageIndex: tf.backend_util.TypedArray = yield tf
+        .argMax(predictions.slice(1, predictions.length))
+        .data();
+      const age = classes[ageIndex[0] + 1];
+      const labels = [gender, age];
+      yield put(predictionSuccess(labels));
+    }
+  } finally {
   }
 }
 

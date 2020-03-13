@@ -11,7 +11,8 @@ import {
   LinearProgress,
   CircularProgress,
   GridListTile,
-  Typography
+  Typography,
+  Hidden
 } from "@material-ui/core";
 import { deleteFace } from "../store/faces";
 import styled from "styled-components";
@@ -19,8 +20,10 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import useFirebaseFile from "./useFirebaseFile";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
+import { useTheme } from "@material-ui/core/styles";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 
-const ImageContainer = ({
+export const ImageContainer = ({
   f,
   error,
   imageURL
@@ -57,36 +60,47 @@ const FaceContainer = styled(GridListTile)`
   width: 100%;
 `;
 
-const LabelContainer = ({ f }: { f: GeneratedFaceData }) => {
+export const LabelContainer = ({
+  f,
+  error
+}: {
+  f: GeneratedFaceData;
+  error: boolean;
+}) => {
+  if (error) {
+    return null;
+  }
   if (f.labelsLoading) {
     return <LinearProgress />;
   } else if (f.labelsLoading === false) {
     return (
-      <>
+      <div>
         {f.labels.map(l => (
           <Chip key={l} label={l} />
         ))}
-      </>
+      </div>
     );
   } else {
     return null;
   }
 };
 
-const FaceMenu = ({
+export const FaceMenu = ({
   f,
   imageURL,
-  error
+  error,
+  color
 }: {
   f: GeneratedFaceData;
   imageURL: string | undefined;
   error: boolean;
+  color?: string;
 }) => {
   const dispatch = useDispatch();
   const deleteFaceFunction = () => {
     const dateNow = new Date();
     dateNow.setMinutes(dateNow.getMinutes() - 5);
-    if (f.complete) {
+    if (f.complete || error) {
       if (window.confirm("Are you sure you want to delete this image?")) {
         dispatch(deleteFace(f.id));
       }
@@ -108,7 +122,7 @@ const FaceMenu = ({
         aria-controls="long-menu"
         aria-haspopup="true"
         onClick={handleClick}
-        style={{ color: "white" }}
+        style={{ color: color ? color : "white" }}
       >
         <MoreVertIcon />
       </IconButton>
@@ -139,7 +153,7 @@ const FaceMenu = ({
         <MenuItem
           aria-label={`delete ${f.id}`}
           onClick={deleteFaceFunction}
-          disabled={!f.complete}
+          disabled={!f.complete && !error}
         >
           <ListItemIcon>
             <DeleteIcon fontSize="small" />
@@ -151,23 +165,35 @@ const FaceMenu = ({
   );
 };
 
-const Face = ({ f }: { f: GeneratedFaceData }) => {
+const Face = ({
+  f,
+  openFaceModal
+}: {
+  f: GeneratedFaceData;
+  openFaceModal: () => void;
+}) => {
   const dateNow = new Date();
   dateNow.setMinutes(dateNow.getMinutes() - 5);
   const error = f.error || (!f.complete && f.timeCreated < +dateNow);
   const imageURL = useFirebaseFile(f.storageRef || "");
 
+  const theme = useTheme();
+
+  const matches = useMediaQuery(theme.breakpoints.down("xs"));
+
   return (
-    <FaceContainer key={f.id}>
+    <FaceContainer key={f.id} onClick={matches ? openFaceModal : undefined}>
       <ImageContainer f={f} error={error} imageURL={imageURL} />
-      <GridListTileBar
-        title={new Date(f.timeCreated).toLocaleDateString(undefined, {
-          hour: "2-digit",
-          minute: "2-digit"
-        })}
-        subtitle={<LabelContainer f={f} />}
-        actionIcon={<FaceMenu f={f} imageURL={imageURL} error={error} />}
-      />
+      <Hidden xsDown>
+        <GridListTileBar
+          title={new Date(f.timeCreated).toLocaleDateString(undefined, {
+            hour: "2-digit",
+            minute: "2-digit"
+          })}
+          subtitle={<LabelContainer f={f} error={error} />}
+          actionIcon={<FaceMenu f={f} imageURL={imageURL} error={error} />}
+        />
+      </Hidden>
     </FaceContainer>
   );
 };

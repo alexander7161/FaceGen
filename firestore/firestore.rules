@@ -6,7 +6,7 @@ service cloud.firestore {
       allow create: if request.auth.uid == userId && request.resource.data.signupDate == request.time;
     }
     match /users/{userId}/faces/{faceId} {
-      allow read, update: if request.auth.uid == userId
+      allow read, update, delete: if request.auth.uid == userId
       allow create: if request.auth.uid == userId && request.resource.data.timeCreated == request.time;
     }
   }
