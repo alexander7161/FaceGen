@@ -31,7 +31,7 @@ const Prediction = () => {
 
 const PredictionPage = () => {
   return (
-    <StyledContainer maxWidth="md">
+    <StyledContainer maxWidth="sm">
       <WebcamCapture />
       <div style={{ display: "flex", flexDirection: "row" }}>
         <Prediction />
