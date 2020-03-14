@@ -19,6 +19,7 @@ import {
 } from ".";
 import { classifierModelSelector, modelLoadedSelector } from "./selector";
 import { eventChannel } from "redux-saga";
+const worker = require("workerize-loader!./classifier.worker"); // eslint-disable-line import/no-webpack-loader-syntax
 
 function* loadModelSaga() {
   try {
@@ -40,40 +41,34 @@ function timer() {
   });
 }
 
-function* predictionTaskSaga() {
-  let image = document.getElementById("webcam") as HTMLVideoElement;
-  const modelLoaded: boolean = yield select(modelLoadedSelector);
-  let model: tf.LayersModel | null = yield select(classifierModelSelector);
-  if (!modelLoaded) {
-    yield put(loadModel());
-    const { payload } = yield take(loadModelSuccess);
-    model = payload;
+const getImage = () => {
+  let v = document.getElementById("webcam") as HTMLVideoElement;
+  var canvas = document.getElementById("c") as HTMLCanvasElement;
+  var context = canvas.getContext("2d")!;
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  var cw = canvas.width;
+  var ch = canvas.height;
+  var vw = v.videoWidth;
+  var vh = v.videoHeight;
+  if (cw / ch < vw / vh) {
+    var th = (cw * vh) / vw;
+    context.drawImage(v, 0, 0, vw, vh, 0, (ch - th) / 2, cw, th);
+  } else {
+    var tw = (ch * vw) / vh;
+    context.drawImage(v, 0, 0, vw, vh, (cw - tw) / 2, 0, tw, ch);
   }
+  return context.getImageData(0, 0, v.videoWidth, v.videoHeight);
+};
+
+function* predictionTaskSaga() {
   const chan = yield call(timer);
+  let instance = worker();
 
   try {
     while (true) {
       yield take(chan);
-      let tensor = tf.browser
-        .fromPixels(image)
-        .resizeNearestNeighbor([150, 150])
-        .toFloat()
-        .expandDims();
-      const result = model!.predict(tensor);
-      const predictions:
-        | Float32Array
-        | Int32Array
-        | Uint8Array = yield (result as tf.Tensor<tf.Rank>)
-        .asType("float32")
-        .data();
-      let classes = ["gender", "senior", "adult", "child"];
-
-      const gender = predictions[0] === 1 ? "female" : "male";
-      const ageIndex: tf.backend_util.TypedArray = yield tf
-        .argMax(predictions.slice(1, predictions.length))
-        .data();
-      const age = classes[ageIndex[0] + 1];
-      const labels = [gender, age];
+      const image = getImage();
+      const labels = yield instance.classify(image);
       yield put(predictionSuccess(labels));
     }
   } finally {
