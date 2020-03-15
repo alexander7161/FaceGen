@@ -84,7 +84,6 @@ class Model():
         with open(self.get_run_folder()+'/runtime.txt', 'w') as file:
             file.write("--- %.2f seconds ---" % (time.time() - start_time))
 
-
     def plot_training(self):
         """
         Plot the training history after training.
@@ -131,9 +130,8 @@ class Model():
         with open(output_dir + "data.csv", "w") as csvfile:
             writer = csv.writer(csvfile)
             writer.writerow(["epoch", "accuracy", "val_accuracy"])
-            for epoch, accuracy,valAccuracy in zip(epochs_range, acc, val_acc):
+            for epoch, accuracy, valAccuracy in zip(epochs_range, acc, val_acc):
                 writer.writerow([epoch, accuracy, valAccuracy])
-
 
     def evaluate(self, testing_data=True):
         generator = self.validation_generator
@@ -146,8 +144,8 @@ class Model():
         evaluation = self.model.evaluate(
             generator, verbose=0)
         with open(self.get_run_folder()+'/accuracy.txt', 'w') as file:
-            file.write(' '.join([str(i) for i in zip(self.model.metrics_names, evaluation)]))
-        
+            file.write(
+                ' '.join([str(i) for i in zip(self.model.metrics_names, evaluation)]))
 
         return "Test results:", [i for i in zip(self.model.metrics_names, evaluation)]
 
