@@ -30,7 +30,7 @@ def get_test_datagen():
     return test_datagen
 
 
-def get_ffhq_train(batch_size):
+def get_ffhq_train(batch_size,shuffle):
     train_datagen = get_train_datagen()
     ffhq_data, columns = load_csv("./face_data/age_gender/labels.csv")
 
@@ -46,7 +46,7 @@ def get_ffhq_train(batch_size):
         batch_size=batch_size,
         class_mode='raw',
         subset='training',
-        shuffle=True,
+        shuffle=shuffle,
         seed=1)
 
     validation_generator = train_datagen.flow_from_dataframe(
@@ -59,7 +59,7 @@ def get_ffhq_train(batch_size):
         batch_size=batch_size,
         class_mode='raw',
         subset='validation',
-        shuffle=True,
+        shuffle=shuffle,
         seed=1)
     return train_generator, validation_generator, columns
 
@@ -128,11 +128,11 @@ def get_celeba(batch_size):
     return train_generator, validation_generator, columns
 
 
-def get_training_data(batch_size, dataset="ffhq"):
+def get_training_data(batch_size, dataset="ffhq",shuffle=True):
     if dataset == "celeba":
         return get_celeba(batch_size)
     else:
-        return get_ffhq_train(batch_size)
+        return get_ffhq_train(batch_size,shuffle)
 
 
 def get_testing_data(batch_size, test_dataset="ffhq"):

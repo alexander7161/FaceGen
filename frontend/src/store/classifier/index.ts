@@ -3,7 +3,7 @@ import * as tf from "@tensorflow/tfjs";
 
 const initialState: {
   loading: boolean;
-  error: null | Error;
+  modelLoadingError: null | Error;
   model: null | tf.LayersModel;
   modelLoaded: boolean;
   prediction?: string[];
@@ -11,7 +11,7 @@ const initialState: {
   predictionError: null | Error;
 } = {
   loading: false,
-  error: null,
+  modelLoadingError: null,
   model: null,
   modelLoaded: false,
   prediction: undefined,
@@ -25,7 +25,7 @@ const classifierSlice = createSlice({
   reducers: {
     loadModel(state) {
       state.loading = true;
-      state.error = null;
+      state.modelLoadingError = null;
       state.modelLoaded = false;
     },
     loadModelSuccess(state, action: PayloadAction<tf.LayersModel>) {
@@ -35,7 +35,7 @@ const classifierSlice = createSlice({
     },
     loadModelFailure(state, action: PayloadAction<Error>) {
       state.loading = false;
-      state.error = action.payload;
+      state.modelLoadingError = action.payload;
       state.modelLoaded = false;
     },
     startWebcamPrediction(state) {

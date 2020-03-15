@@ -6,7 +6,8 @@ import { useSelector } from "react-redux";
 import {
   predictionSelector,
   predictionErrorSelector,
-  modelLoadingSelector
+  modelLoadingSelector,
+  modelLoadingErrorSelector
 } from "../store/classifier/selector";
 import PredictButton from "../components/PredictButton";
 const StyledContainer = styled(Container)`
@@ -16,9 +17,14 @@ const StyledContainer = styled(Container)`
 const Prediction = () => {
   const prediction = useSelector(predictionSelector);
   const predictionError = useSelector(predictionErrorSelector);
+  const modelLoadingError = useSelector(modelLoadingErrorSelector);
+
+  if (modelLoadingError) {
+    return <>Model loading error</>;
+  }
 
   if (predictionError) {
-    return <>"error"</>;
+    return <>error</>;
   }
 
   return (

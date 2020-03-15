@@ -5,7 +5,8 @@ export const classifierModelSelector = (state: AppState) =>
 
 export const modelLoadedSelector = (state: AppState) =>
   state.classifier.modelLoaded;
-export const modelErrorSelector = (state: AppState) => state.classifier.error;
+export const modelLoadingErrorSelector = (state: AppState) =>
+  state.classifier.modelLoadingError;
 export const modelLoadingSelector = (state: AppState) =>
   state.classifier.loading;
 
