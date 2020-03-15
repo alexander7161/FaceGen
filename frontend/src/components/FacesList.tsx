@@ -22,12 +22,10 @@ const FaceModal = ({ f }: { f: GeneratedFaceData }) => {
   const dateNow = new Date();
   dateNow.setMinutes(dateNow.getMinutes() - 5);
 
-  const error = f.error || (!f.complete && f.timeCreated < +dateNow);
-
   return (
     <div style={{ outline: 0, backgroundColor: "white" }}>
       <>
-        <ImageContainer f={f} error={error} imageURL={imageURL} />
+        <ImageContainer f={f} imageURL={imageURL} />
 
         <Typography variant="h6" style={{ padding: 8 }}>
           {new Date(f.timeCreated).toLocaleDateString(undefined, {
@@ -44,8 +42,8 @@ const FaceModal = ({ f }: { f: GeneratedFaceData }) => {
             padding: 4
           }}
         >
-          <LabelContainer f={f} error={error} />
-          <FaceMenu f={f} imageURL={imageURL} error={error} color="black" />
+          <LabelContainer f={f} />
+          <FaceMenu f={f} imageURL={imageURL} color="black" />
         </div>
       </>
     </div>

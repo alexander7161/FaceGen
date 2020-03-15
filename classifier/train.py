@@ -23,7 +23,9 @@ parser.add_argument('--batchsize', dest='batch_size',
 parser.add_argument('--dataset', '-d', dest='dataset',
                     type=str, default="ffhq",
                     help='Dataset to use.')
-parser.add_argument('--shuffle','-s', dest='shuffle',
+parser.add_argument('--columns', '-c', dest='columns', nargs='+',
+                    help='Dataset to use.')
+parser.add_argument('--shuffle', '-s', dest='shuffle',
                     action='store_true',
                     help='Should the dataset be shuffled.')
 
@@ -69,7 +71,7 @@ else:
         batch_size=args.batch_size,
         dataset=args.dataset,
         shuffle=args.shuffle)
-        
+
 model.load_weights()
 model.fit()
 model.plot_training()
