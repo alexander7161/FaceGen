@@ -64,11 +64,20 @@ def get_ffhq_train(batch_size,shuffle):
     return train_generator, validation_generator, columns
 
 
-def get_ffhq_test(batch_size):
+def get_ffhq_test(batch_size, test_dataset):
+    if test_dataset == "overall":
+        generated_test_data, columns = load_csv(
+            "./face_data/age_gender_test/labels_generated.csv")
+        ffhq_test_data, columns = load_csv(
+            "./face_data/age_gender_test/labels.csv")
+        ffhq_test_data = pd.concat([generated_test_data, ffhq_test_data])
+    if test_dataset == "ffhqgenerated":
+        ffhq_test_data, columns = load_csv(
+            "./face_data/age_gender_test/labels_generated.csv")
+    else:
+        ffhq_test_data, columns = load_csv(
+            "./face_data/age_gender_test/labels.csv")
     test_datagen = get_test_datagen()
-
-    ffhq_test_data, columns = load_csv(
-        "./face_data/age_gender_test/labels.csv")
 
     print(ffhq_test_data.info())
     test_generator = test_datagen.flow_from_dataframe(
@@ -90,10 +99,10 @@ def get_celeba(batch_size):
     train_datagen = get_train_datagen()
     train_df, columns = load_csv(
         "./celeba-dataset/list_attr_celeba.csv")
-    columns = ["Blond_Hair","Black_Hair","Male","No_Beard","Young"]
+    columns = ["Blond_Hair", "Black_Hair", "Male", "No_Beard", "Young"]
     columns = columns[:2]
     print(columns)
-  
+
     train_generator = train_datagen.flow_from_dataframe(
         dataframe=train_df[:1000],
         directory="celeba-dataset/img_align_celeba/img_align_celeba",
@@ -126,5 +135,5 @@ def get_training_data(batch_size, dataset="ffhq",shuffle=True):
         return get_ffhq_train(batch_size,shuffle)
 
 
-def get_testing_data(batch_size, dataset="ffhq"):
-    return get_ffhq_test(batch_size)
+def get_testing_data(batch_size, test_dataset="ffhq"):
+    return get_ffhq_test(batch_size, test_dataset)

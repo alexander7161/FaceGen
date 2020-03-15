@@ -25,14 +25,12 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 export const ImageContainer = ({
   f,
-  error,
   imageURL
 }: {
   f: GeneratedFaceData;
-  error: boolean;
   imageURL?: string;
 }) => {
-  if (error) {
+  if (f.error) {
     return (
       <div
         style={{
@@ -60,14 +58,8 @@ const FaceContainer = styled(GridListTile)`
   width: 100%;
 `;
 
-export const LabelContainer = ({
-  f,
-  error
-}: {
-  f: GeneratedFaceData;
-  error: boolean;
-}) => {
-  if (error) {
+export const LabelContainer = ({ f }: { f: GeneratedFaceData }) => {
+  if (f.error) {
     return null;
   }
   if (f.labelsLoading) {
@@ -88,19 +80,17 @@ export const LabelContainer = ({
 export const FaceMenu = ({
   f,
   imageURL,
-  error,
   color
 }: {
   f: GeneratedFaceData;
   imageURL: string | undefined;
-  error: boolean;
   color?: string;
 }) => {
   const dispatch = useDispatch();
   const deleteFaceFunction = () => {
     const dateNow = new Date();
     dateNow.setMinutes(dateNow.getMinutes() - 5);
-    if (f.complete || error) {
+    if (f.complete || f.error) {
       if (window.confirm("Are you sure you want to delete this image?")) {
         dispatch(deleteFace(f.id));
       }
@@ -134,13 +124,13 @@ export const FaceMenu = ({
         onClose={handleClose}
       >
         <ButtonBase
-          disabled={Boolean(!f.complete || error)}
+          disabled={Boolean(!f.complete || f.error)}
           download
           href={imageURL || "#"}
           target="_blank"
         >
           <MenuItem
-            disabled={Boolean(!f.complete || error)}
+            disabled={Boolean(!f.complete || f.error)}
             onClick={handleClose}
             aria-label={`delete ${f.id}`}
           >
@@ -153,7 +143,7 @@ export const FaceMenu = ({
         <MenuItem
           aria-label={`delete ${f.id}`}
           onClick={deleteFaceFunction}
-          disabled={!f.complete && !error}
+          disabled={!f.complete && !f.error}
         >
           <ListItemIcon>
             <DeleteIcon fontSize="small" />
@@ -174,7 +164,6 @@ const Face = ({
 }) => {
   const dateNow = new Date();
   dateNow.setMinutes(dateNow.getMinutes() - 5);
-  const error = f.error || (!f.complete && f.timeCreated < +dateNow);
   const imageURL = useFirebaseFile(f.storageRef || "");
 
   const theme = useTheme();
@@ -183,15 +172,15 @@ const Face = ({
 
   return (
     <FaceContainer key={f.id} onClick={matches ? openFaceModal : undefined}>
-      <ImageContainer f={f} error={error} imageURL={imageURL} />
+      <ImageContainer f={f} imageURL={imageURL} />
       <Hidden xsDown>
         <GridListTileBar
           title={new Date(f.timeCreated).toLocaleDateString(undefined, {
             hour: "2-digit",
             minute: "2-digit"
           })}
-          subtitle={<LabelContainer f={f} error={error} />}
-          actionIcon={<FaceMenu f={f} imageURL={imageURL} error={error} />}
+          subtitle={<LabelContainer f={f} />}
+          actionIcon={<FaceMenu f={f} imageURL={imageURL} />}
         />
       </Hidden>
     </FaceContainer>

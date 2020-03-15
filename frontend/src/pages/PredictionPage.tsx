@@ -1,11 +1,12 @@
 import React from "react";
-import { Container, Chip } from "@material-ui/core";
+import { Container, Chip, Snackbar } from "@material-ui/core";
 import styled from "styled-components";
 import WebcamCapture from "../components/Webcam";
 import { useSelector } from "react-redux";
 import {
   predictionSelector,
-  predictionErrorSelector
+  predictionErrorSelector,
+  modelLoadingSelector
 } from "../store/classifier/selector";
 import PredictButton from "../components/PredictButton";
 const StyledContainer = styled(Container)`
@@ -30,14 +31,26 @@ const Prediction = () => {
 };
 
 const PredictionPage = () => {
+  const modelLoading = useSelector(modelLoadingSelector);
+
   return (
-    <StyledContainer maxWidth="md">
-      <WebcamCapture />
-      <div style={{ display: "flex", flexDirection: "row" }}>
-        <Prediction />
-        <PredictButton />
-      </div>
-    </StyledContainer>
+    <>
+      <StyledContainer maxWidth="sm">
+        <WebcamCapture />
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          <Prediction />
+          <PredictButton />
+        </div>
+      </StyledContainer>
+      <Snackbar
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left"
+        }}
+        open={modelLoading}
+        message="Model loading"
+      />
+    </>
   );
 };
 
