@@ -23,7 +23,8 @@ parser.add_argument('--batchsize', dest='batch_size',
 parser.add_argument('--dataset', '-d', dest='dataset',
                     type=str, default="ffhq",
                     help='Dataset to use.')
-
+parser.add_argument('--columns', '-c', dest='columns', nargs='+',
+                    help='Dataset to use.')
 
 args = parser.parse_args()
 
