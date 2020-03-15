@@ -71,7 +71,7 @@ def get_ffhq_test(batch_size, test_dataset):
         ffhq_test_data, columns = load_csv(
             "./face_data/age_gender_test/labels.csv")
         ffhq_test_data = pd.concat([generated_test_data, ffhq_test_data])
-    if test_dataset == "ffhqgenerated":
+    elif test_dataset == "ffhqgenerated":
         ffhq_test_data, columns = load_csv(
             "./face_data/age_gender_test/labels_generated.csv")
     else:
