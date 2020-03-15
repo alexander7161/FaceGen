@@ -59,10 +59,10 @@ class Model():
         self.validation_generator = validation_generator
         self.columns = columns
 
-    def load_test_data(self):
+    def load_test_data(self, dataset="ffhq"):
         """Load testing data generators"""
         from datasets import get_testing_data
-        test_generator = get_testing_data(self.batch_size)
+        test_generator = get_testing_data(self.batch_size, dataset)
         self.test_generator = test_generator
 
     def get_model(self):
@@ -133,24 +133,24 @@ class Model():
             for epoch, accuracy, valAccuracy in zip(epochs_range, acc, val_acc):
                 writer.writerow([epoch, accuracy, valAccuracy])
 
-    def evaluate(self, testing_data=True):
-        generator = self.validation_generator
+    def evaluate(self, test_dataset="ffhq"):
+        self.load_test_data(test_dataset)
 
-        if testing_data:
-            generator = self.test_generator
+        generator = self.test_generator
 
         generator.reset()
 
         evaluation = self.model.evaluate(
             generator, verbose=0)
-        with open(self.get_run_folder()+'/accuracy.txt', 'w') as file:
+        with open(self.get_run_folder()+'/accuracy'+test_dataset+".txt", 'w') as file:
             file.write(
                 ' '.join([str(i) for i in zip(self.model.metrics_names, evaluation)]))
 
         return "Test results:", [i for i in zip(self.model.metrics_names, evaluation)]
 
-    def confusion_matrix(self):
+    def confusion_matrix(self, test_dataset="ffhq"):
         """Save a confusion matrix for the model based on the test data."""
+        self.load_test_data(test_dataset)
         self.test_generator.reset()
         labels = self.test_generator.labels
         pred = self.model.predict(self.test_generator)
@@ -170,10 +170,10 @@ class Model():
         plt.figure()
         plot_confusion_matrix(
             ageCf, classes=["senior", "adult", "child"])
-        plt.savefig(self.get_run_folder()+'/CmAge.png')
+        plt.savefig(self.get_run_folder()+'/CmAge'+test_dataset+'.png')
         plt.figure()
         plot_confusion_matrix(genderCf, classes=["Male", "Female"])
-        plt.savefig(self.get_run_folder()+'/CmGender.png')
+        plt.savefig(self.get_run_folder()+'/CmGender'+test_dataset+'.png')
 
         return genderCf, ageCf
 

@@ -62,6 +62,11 @@ else:
 
 model.load_weights()
 print(model.evaluate())
+print(model.evaluate("ffhqgenerated"))
+print(model.evaluate("overall"))
 genderCf, ageCf = model.confusion_matrix()
+genderCf, ageCf = model.confusion_matrix("ffhqgenerated")
+genderCf, ageCf = model.confusion_matrix("overall")
+
 print(genderCf)
 print(ageCf)
