@@ -10,8 +10,8 @@ import pandas as pd
 class MulticlassNNModel(Model):
     """A Neural Network classifier that classifies multiple labels and multiple classes."""
 
-    def __init__(self, epochs,  batch_size, run_name, dataset, shuffle):
-        super().__init__(epochs, batch_size, run_name, dataset,shuffle)
+    def __init__(self, run_name=None):
+        super().__init__(run_name)
 
     def get_model(self):
         """
@@ -36,8 +36,8 @@ class MulticlassNNModel(Model):
 class MulticlassCNNModel(Model):
     """A CNN classifier that classifies multiple labels and multiple classes."""
 
-    def __init__(self, epochs,  batch_size, run_name, dataset,shuffle):
-        super().__init__(epochs, batch_size, run_name, dataset,shuffle)
+    def __init__(self, run_name=None):
+        super().__init__(run_name)
 
     def get_model(self):
         model = Sequential([
@@ -63,8 +63,9 @@ class MulticlassCNNModel(Model):
 
 class MulticlassCNNDropoutModel(Model):
     """A CNN classifier that classifies multiple labels and multiple classes."""
-    def __init__(self, epochs,  batch_size, run_name, dataset, shuffle):
-        super().__init__(epochs, batch_size, run_name, dataset, shuffle)
+
+    def __init__(self, run_name=None):
+        super().__init__(run_name)
 
     def get_model(self):
         """
@@ -94,8 +95,9 @@ class MulticlassCNNDropoutModel(Model):
 
 class MulticlassCNNOptimisedModel(Model):
     """A CNN classifier that classifies multiple labels and multiple classes."""
-    def __init__(self, epochs,  batch_size, run_name, dataset, shuffle):
-        super().__init__(epochs, batch_size, run_name, dataset, shuffle)
+
+    def __init__(self, run_name=None):
+        super().__init__(run_name)
 
     def get_model(self):
         """

@@ -20,21 +20,15 @@ os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 class Model():
     """Abstract Class for classifier models"""
 
-    def __init__(self, epochs, batch_size, run_name, dataset, shuffle):
-        self.dataset=dataset
-        self.epochs = epochs
-        self.batch_size = batch_size
-        if run_name:
+    def __init__(self, run_name=None):
+        if run_name is not None:
             self.run_name = run_name
         else:
             self.run_name = datetime.now().strftime("%d_%m_%Y-%H_%M_%S")
-        self.load_training_data(dataset, shuffle)
-        self.load_test_data()
-        self.model = self.get_model()
         self.callbacks = self.get_callbacks()
 
     def get_run_folder(self):
-        return "runs/"+self.run_name+"_"+self.dataset
+        return "runs/"+self.run_name
 
     def get_checkpoint_folder(self):
         return self.get_run_folder() + "/checkpoints/cp.ckpt"
@@ -50,39 +44,42 @@ class Model():
             verbose=1)
         return [cp_callback]
 
-    def load_training_data(self,dataset, shuffle):
+    def load_training_data(self, dataset, shuffle):
         """Load training and validation data generators"""
         from datasets import get_training_data
-        train_generator, validation_generator,columns = get_training_data(
-            self.batch_size,dataset, shuffle)
+        train_generator, validation_generator, columns = get_training_data(
+            self.batch_size, dataset, shuffle)
         self.train_generator = train_generator
         self.validation_generator = validation_generator
         self.columns = columns
 
-    def load_test_data(self, dataset="ffhq"):
+    def load_test_data(self, dataset="ffhq", batch_size=32):
         """Load testing data generators"""
         from datasets import get_testing_data
-        test_generator = get_testing_data(self.batch_size, dataset)
+        test_generator = get_testing_data(batch_size, dataset)
         self.test_generator = test_generator
 
     def get_model(self):
         """Model structure compiled here in concrete subclasses"""
         pass
 
-    def fit(self):
+    def fit(self, train_generator, validation_generator, columns, epochs=30, verbose=True):
         """Trains the model"""
-        STEP_SIZE_TRAIN = self.train_generator.n//self.train_generator.batch_size
-        STEP_SIZE_VALID = self.validation_generator.n//self.validation_generator.batch_size
+        self.columns = columns
+        self.model = self.get_model()
+        STEP_SIZE_TRAIN = train_generator.n//train_generator.batch_size
+        STEP_SIZE_VALID = validation_generator.n//validation_generator.batch_size
         start_time = time.time()
         self.history = self.model.fit(
-            self.train_generator,
+            train_generator,
             steps_per_epoch=STEP_SIZE_TRAIN,
             validation_steps=STEP_SIZE_VALID,
-            validation_data=self.validation_generator,
-            epochs=self.epochs,
+            validation_data=validation_generator,
+            epochs=epochs,
             callbacks=self.callbacks)
-        with open(self.get_run_folder()+'/runtime.txt', 'w') as file:
-            file.write("--- %.2f seconds ---" % (time.time() - start_time))
+        if verbose:
+            with open(self.get_run_folder()+'/runtime.txt', 'w') as file:
+                file.write("--- %.2f seconds ---" % (time.time() - start_time))
 
     def plot_training(self):
         """
@@ -133,7 +130,7 @@ class Model():
             for epoch, accuracy, valAccuracy in zip(epochs_range, acc, val_acc):
                 writer.writerow([epoch, accuracy, valAccuracy])
 
-    def evaluate(self, test_dataset="ffhq"):
+    def evaluate(self, test_dataset="overall"):
         self.load_test_data(test_dataset)
 
         generator = self.test_generator
@@ -146,7 +143,7 @@ class Model():
             file.write(
                 ' '.join([str(i) for i in zip(self.model.metrics_names, evaluation)]))
 
-        return "Test results:", [i for i in zip(self.model.metrics_names, evaluation)]
+        return evaluation
 
     def confusion_matrix(self, test_dataset="ffhq"):
         """Save a confusion matrix for the model based on the test data."""
