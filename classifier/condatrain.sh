@@ -6,4 +6,4 @@
 module load devtools/anaconda/2019.3-python3.6.9
 cd ~/FaceGen/classifier/
 conda activate myenv36
-python3 train.py -e 600 -n dropout600 -s -m dropout
+python3 train.py -e 1200 -n 6layer1200 -s -m 6layer

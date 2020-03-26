@@ -15,3 +15,8 @@ sbatch -p nms_research condatest.sh
 ```
 sbatch -p nms_research condatrain.sh
 ```
+
+
+```
+sbatch -p nms_research condaCrossValidation.sh
+```
