@@ -3,6 +3,8 @@ from argparse import ArgumentParser
 from multiclass_model import MulticlassCNNOptimisedModel
 from datetime import datetime
 import sys
+from models import get_model
+
 parser = ArgumentParser()
 parser.add_argument('--epochs', '-e', dest='epochs',
                     default=15, type=int,
@@ -19,6 +21,7 @@ parser.add_argument('--batchsize', dest='batch_size',
 
 args = parser.parse_args()
 
+model = get_model(args.model, args.run_name)
 
 crossValidation = CrossVal()
 
@@ -33,9 +36,8 @@ def get_run_folder(self):
 
 
 # self made Kfold cross validation.
-# try:
 crossValAccuracy = crossValidation.trainTestSplit(
-    MulticlassCNNOptimisedModel, args.epochs)
+    type(model), args.epochs)
 with open(get_run_folder()+'/crossValScore.txt', 'w') as file:
     file.write(crossValAccuracy)
 
