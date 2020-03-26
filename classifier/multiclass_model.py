@@ -10,10 +10,10 @@ import pandas as pd
 class MulticlassNNModel(Model):
     """A Neural Network classifier that classifies multiple labels and multiple classes."""
 
-    def __init__(self, epochs,  batch_size, run_name, dataset, shuffle):
-        super().__init__(epochs, batch_size, run_name, dataset,shuffle)
+    def __init__(self, outputs, run_name=None, save_checkpoints=True):
+        super().__init__(outputs, run_name, save_checkpoints)
 
-    def get_model(self):
+    def get_model(self, outputs):
         """
         Simple Neural Network
         2 fully-connected Hidden layers.
@@ -23,7 +23,7 @@ class MulticlassNNModel(Model):
             Flatten(),
             Dense(512),
             Dense(512),
-            Dense(len(self.columns), activation='sigmoid'),
+            Dense(outputs, activation='sigmoid'),
         ])
 
         # Binary_crossentropy from https://github.com/keras-team/keras/issues/741
@@ -36,10 +36,10 @@ class MulticlassNNModel(Model):
 class MulticlassCNNModel(Model):
     """A CNN classifier that classifies multiple labels and multiple classes."""
 
-    def __init__(self, epochs,  batch_size, run_name, dataset,shuffle):
-        super().__init__(epochs, batch_size, run_name, dataset,shuffle)
+    def __init__(self, outputs, run_name=None, save_checkpoints=True):
+        super().__init__(outputs, run_name, save_checkpoints)
 
-    def get_model(self):
+    def get_model(self, outputs):
         model = Sequential([
             Conv2D(32, (3, 3), padding='same',
                    input_shape=(IMG_HEIGHT, IMG_WIDTH, 3)),
@@ -51,7 +51,7 @@ class MulticlassCNNModel(Model):
             MaxPooling2D(pool_size=(2, 2)),
             Flatten(),
             Dense(512),
-            Dense(len(self.columns), activation='sigmoid'),
+            Dense(outputs, activation='sigmoid'),
         ])
 
         # Binary_crossentropy from https://github.com/keras-team/keras/issues/741
@@ -63,10 +63,11 @@ class MulticlassCNNModel(Model):
 
 class MulticlassCNNDropoutModel(Model):
     """A CNN classifier that classifies multiple labels and multiple classes."""
-    def __init__(self, epochs,  batch_size, run_name, dataset, shuffle):
-        super().__init__(epochs, batch_size, run_name, dataset, shuffle)
 
-    def get_model(self):
+    def __init__(self, outputs, run_name=None, save_checkpoints=True):
+        super().__init__(outputs, run_name, save_checkpoints)
+
+    def get_model(self, outputs):
         """
         Dropout layers added.
         """
@@ -83,7 +84,7 @@ class MulticlassCNNDropoutModel(Model):
             Flatten(),
             Dense(512),
             Dropout(0.5),
-            Dense(len(self.columns), activation='sigmoid'),
+            Dense(outputs, activation='sigmoid'),
         ])
 
         model.compile("adam", loss="binary_crossentropy",
@@ -93,33 +94,71 @@ class MulticlassCNNDropoutModel(Model):
 
 
 class MulticlassCNNOptimisedModel(Model):
-    """A CNN classifier that classifies multiple labels and multiple classes."""
-    def __init__(self, epochs,  batch_size, run_name, dataset, shuffle):
-        super().__init__(epochs, batch_size, run_name, dataset, shuffle)
+    """A CNN classifier that classifies multiple labels and multiple classes.
+        With Dropout and relu activation."""
 
-    def get_model(self):
+    def __init__(self, outputs, run_name=None, save_checkpoints=True):
+        super().__init__(outputs, run_name, save_checkpoints)
+
+    def get_model(self, outputs):
         """
         Activation layers added
         """
         model = Sequential([
             Conv2D(32, (3, 3), padding='same',
-                   input_shape=(IMG_HEIGHT, IMG_WIDTH, 3)),
-            Activation('relu'),
-            Conv2D(32, (3, 3)),
-            Activation('relu'),
+                   input_shape=(IMG_HEIGHT, IMG_WIDTH, 3), activation='relu'),
+            Conv2D(32, (3, 3), activation='relu'),
             MaxPooling2D(pool_size=(2, 2)),
             Dropout(0.25),
-            Conv2D(64, (3, 3), padding='same'),
-            Activation('relu'),
-            Conv2D(64, (3, 3)),
-            Activation('relu'),
+            Conv2D(64, (3, 3), padding='same', activation='relu'),
+            Conv2D(64, (3, 3), activation='relu'),
             MaxPooling2D(pool_size=(2, 2)),
             Dropout(0.25),
             Flatten(),
-            Dense(512),
-            Activation('relu'),
+            Dense(512, activation='relu'),
             Dropout(0.5),
-            Dense(len(self.columns), activation='sigmoid'),
+            Dense(outputs, activation='sigmoid'),
+        ])
+
+        # Binary_crossentropy from https://github.com/keras-team/keras/issues/741
+        model.compile("adam", loss="binary_crossentropy",
+                      metrics=['accuracy'])
+
+        return model
+
+class CNN6LayerModel(Model):
+    """A CNN classifier that classifies multiple labels and multiple classes.
+        With Dropout and relu activation."""
+
+    def __init__(self, outputs, run_name=None, save_checkpoints=True):
+        super().__init__(outputs, run_name, save_checkpoints)
+
+    def get_model(self, outputs):
+        """
+        Activation layers added
+        """
+        model = Sequential([
+            Conv2D(32, (3, 3), padding='same',
+                   input_shape=(IMG_HEIGHT, IMG_WIDTH, 3), activation='relu'),
+            Conv2D(32, (3, 3), activation='relu'),
+            MaxPooling2D(pool_size=(2, 2)),
+            Dropout(0.25),
+            Conv2D(64, (3, 3), padding='same', activation='relu'),
+            Conv2D(64, (3, 3), activation='relu'),
+            MaxPooling2D(pool_size=(2, 2)),
+            Dropout(0.25),
+            Conv2D(64, (3, 3), activation='relu'),
+            MaxPooling2D(pool_size=(2, 2)),
+            Conv2D(128, (3, 3), activation='relu'),
+            MaxPooling2D(pool_size=(2, 2)),
+            Dropout(0.25),
+            Conv2D(128, (3, 3), activation='relu'),
+            MaxPooling2D(pool_size=(2, 2)),
+            Dropout(0.25),
+            Flatten(),
+            Dense(512, activation='relu'),
+            Dropout(0.5),
+            Dense(outputs, activation='sigmoid'),
         ])
 
         # Binary_crossentropy from https://github.com/keras-team/keras/issues/741

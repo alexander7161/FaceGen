@@ -11,7 +11,7 @@ class BinaryModel(Model):
     def __init__(self, epochs,  batch_size, run_name,shuffle):
         Model.__init__(self, epochs,  batch_size, run_name,shuffle)
 
-    def get_model(self):
+    def get_model(self, outputs):
         """
         Structure from:
         https://www.tensorflow.org/tutorials/images/classification
