@@ -64,7 +64,7 @@ def get_ffhq_train(batch_size,shuffle):
     return train_generator, validation_generator, columns
 
 
-def get_ffhq_test(batch_size, test_dataset):
+def get_ffhq_test(test_dataset):
     if test_dataset == "overall":
         generated_test_data, columns = load_csv(
             "./face_data/age_gender_test/labels_generated.csv")
@@ -87,12 +87,11 @@ def get_ffhq_test(batch_size, test_dataset):
         y_col=columns,
         target_size=(
             constants.IMG_HEIGHT, constants.IMG_WIDTH),
-        batch_size=batch_size,
         class_mode='raw',
         shuffle=False,
         seed=1)
 
-    return test_generator
+    return test_generator, columns
 
 
 def get_celeba(batch_size):
@@ -135,5 +134,5 @@ def get_training_data(batch_size, dataset="ffhq",shuffle=True):
         return get_ffhq_train(batch_size,shuffle)
 
 
-def get_testing_data(batch_size, test_dataset="ffhq"):
-    return get_ffhq_test(batch_size, test_dataset)
+def get_testing_data(test_dataset="ffhq"):
+    return get_ffhq_test(test_dataset)

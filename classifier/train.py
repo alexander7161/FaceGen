@@ -1,11 +1,7 @@
 import tensorflow as tf
-from model import Model
-from binary_model import BinaryModel
-from multiclass_model import MulticlassCNNModel, MulticlassNNModel, MulticlassCNNDropoutModel, MulticlassCNNOptimisedModel
-import constants
-from matplotlib import pyplot as plt
 from argparse import ArgumentParser
-import time
+from datasets import get_training_data, get_testing_data
+from models import get_model
 
 parser = ArgumentParser()
 parser.add_argument('--epochs', '-e', dest='epochs',
@@ -26,59 +22,32 @@ parser.add_argument('--dataset', '-d', dest='dataset',
 parser.add_argument('--columns', '-c', dest='columns', nargs='+',
                     help='Dataset to use.')
 parser.add_argument('--shuffle', '-s', dest='shuffle',
-                    action='store_true',
+                    action='store_true', default=True,
                     help='Should the dataset be shuffled.')
 
 args = parser.parse_args()
 
-# print(tf.config.experimental.list_physical_devices(device_type=None))
+print(tf.config.experimental.list_physical_devices(device_type=None))
 
-# print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
+print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
+if args.run_name:
+    print("training: "+args.run_name)
 
-print("training: "+args.run_name)
-
-if args.model == "binary":
-    model = BinaryModel(
-        epochs=args.epochs,
-        run_name=args.run_name,
-        batch_size=args.batch_size,
-        shuffle=args.shuffle)
-elif args.model == "nn":
-    model = MulticlassNNModel(
-        epochs=args.epochs,
-        run_name=args.run_name,
-        batch_size=args.batch_size,
-        dataset=args.dataset,
-        shuffle=args.shuffle)
-elif args.model == "cnn":
-    model = MulticlassCNNModel(
-        epochs=args.epochs,
-        run_name=args.run_name,
-        batch_size=args.batch_size,
-        dataset=args.dataset,
-        shuffle=args.shuffle)
-elif args.model == "dropout":
-    model = MulticlassCNNDropoutModel(
-        epochs=args.epochs,
-        run_name=args.run_name,
-        batch_size=args.batch_size,
-        dataset=args.dataset,
-        shuffle=args.shuffle)
-else:
-    model = MulticlassCNNOptimisedModel(
-        epochs=args.epochs,
-        run_name=args.run_name,
-        batch_size=args.batch_size,
-        dataset=args.dataset,
-        shuffle=args.shuffle)
+model = get_model(args.model, args.run_name)
 
 model.load_weights()
-model.fit()
+train_generator, validation_generator, columns = get_training_data(
+    args.batch_size, args.dataset, args.shuffle)
+model.fit(train_generator, validation_generator, columns, epochs=args.epochs)
 model.plot_training()
-print(model.evaluate())
-print(model.evaluate("ffhqgenerated"))
-print(model.evaluate("overall"))
-genderCf, ageCf = model.confusion_matrix()
-genderCf, ageCf = model.confusion_matrix("ffhqgenerated")
-genderCf, ageCf = model.confusion_matrix("overall")
+
+datasets = ["ffhq", "ffhqgenerated", "overall"]
+for dataset in datasets:
+    test_generator, columns = get_testing_data(dataset)
+    evaluation = model.evaluate(test_generator, dataset)
+    print(evaluation)
+    genderCf, ageCf = model.confusion_matrix(test_generator, dataset)
+    print(genderCf)
+    print(ageCf)
+
 model.save()
