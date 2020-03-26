@@ -27,6 +27,10 @@ class Model():
             self.run_name = datetime.now().strftime("%d_%m_%Y-%H_%M_%S")
         self.callbacks = self.get_callbacks(save_checkpoints)
         self.model = self.get_model(outputs)
+        try:
+            os.mkdir(self.get_run_folder())
+        except:
+            pass
 
     def get_run_folder(self):
         return "runs/"+self.run_name

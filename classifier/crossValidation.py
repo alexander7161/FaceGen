@@ -31,14 +31,19 @@ else:
     run_name = datetime.now().strftime("%d_%m_%Y-%H_%M_%S")
 
 
-def get_run_folder(self):
+def get_run_folder():
     return "runs/crossVal/"+run_name
 
 
 # self made Kfold cross validation.
 crossValAccuracy = crossValidation.trainTestSplit(
-    type(model), args.epochs)
+    classifier=type(model),run_name=run_name, epochs=args.epochs)
+from os import makedirs
+try:
+    makedirs(get_run_folder())
+except:
+    pass
 with open(get_run_folder()+'/crossValScore.txt', 'w') as file:
-    file.write(crossValAccuracy)
+    file.write(str(crossValAccuracy))
 
 print("My cross validation Accuracy: %.4f" % crossValAccuracy)

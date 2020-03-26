@@ -4,7 +4,7 @@ import constants
 import numpy as np
 import random
 import pandas as pd
-import multiprocessing as mp
+from datasets import get_testing_data
 
 # Class for cross validation
 
@@ -74,14 +74,14 @@ class CrossVal(object):
 
         c = classifier(outputs=4, run_name=run_name, save_checkpoints=False)
         # Train classifier on training data.
-        c.fit(train_generator, validation_generator, columns, epochs)
+        c.fit(train_generator, validation_generator, columns, epochs, verbose=False)
         # Get accuracy for the test data.
-        accuracy = c.evaluate()
+        test_generator, columns = get_testing_data("overall")
+        loss, accuracy = c.evaluate(test_generator, save_to_File=False)
         return accuracy
 
     # Perfoms K-fold cross validation on the provided data and classifier.
     def trainTestSplit(self, classifier, run_name, epochs=30, folds=10):
-
         ffhq_data, columns = load_csv("./face_data/age_gender/labels.csv")
 
         shuffledData = self.shuffleData(ffhq_data)
@@ -90,16 +90,8 @@ class CrossVal(object):
         splits = self.createSplits(shuffledData, folds)
 
         # Collect accuracies for each fold.
-        accuracies = [self.getAccuracy(classifier, i, splits, columns, epochs, run_name+i)
+        accuracies = [self.getAccuracy(classifier, i, splits, columns, epochs,"%s%d"% (run_name,i))
                       for i in range(folds)]
-
-        pool = mp.Pool(mp.cpu_count())
-        print("Number of processors: ", mp.cpu_count())
-
-        results = pool.map(self.getAccuracy, [
-                           (classifier, i, splits, columns, epochs) for i in range(folds)])
-
-        pool.close()
 
         # Compute mean accuracy.
         accuracy = np.mean(accuracies)
