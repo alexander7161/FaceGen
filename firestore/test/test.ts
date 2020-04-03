@@ -181,4 +181,22 @@ class MyApp {
         })
     );
   }
+
+  @test
+  async "should let user delete face doc"() {
+    const alice = authedApp({ uid: "alice" });
+    const faceRef = alice
+      .collection("users")
+      .doc("alice")
+      .collection("faces")
+      .doc("aliceFace");
+
+    await firebase.assertSucceeds(
+      faceRef.set({
+        timeCreated: firebase.firestore.FieldValue.serverTimestamp()
+      })
+    );
+
+    await firebase.assertSucceeds(faceRef.delete());
+  }
 }

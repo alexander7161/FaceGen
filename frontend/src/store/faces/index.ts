@@ -3,9 +3,11 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 const initialState: {
   faces: GeneratedFaceData[] | null;
   error: Error | null;
+  loading: boolean;
 } = {
   faces: null,
-  error: null
+  error: null,
+  loading: true
 };
 
 const facesSlice = createSlice({
@@ -15,6 +17,7 @@ const facesSlice = createSlice({
     receiveFaces(state, action: PayloadAction<GeneratedFaceData[] | null>) {
       state.faces = action.payload;
       state.error = null;
+      state.loading = false;
     },
     deleteFace(state, action: PayloadAction<string>) {},
     deleteAllFaces(state) {}

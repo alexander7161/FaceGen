@@ -1,60 +1,53 @@
-from model import Model
-import constants
-from matplotlib import pyplot as plt
+import tensorflow as tf
 from argparse import ArgumentParser
+from datasets import get_training_data, get_testing_data
+from models import get_model
 
 parser = ArgumentParser()
-parser.add_argument('--label', '-l', dest='label',
-                    default="gender", type=str,
-                    help='set label for classifier (default: gender)')
 parser.add_argument('--epochs', '-e', dest='epochs',
                     default=15, type=int,
                     help='set epochs for classifier (default: 15)')
-parser.add_argument('--test', '-t', dest='test',
-                    default=1, type=str,
-                    help='set epochs for classifier (default: 1)')
-
+parser.add_argument('--runname', '-n', dest='run_name',
+                    type=str,
+                    help='Name for this run, will otherwise not try to load model.')
+parser.add_argument('--m', '-m', dest='model',
+                    type=str, default="cnn",
+                    help='declare what model to use.')
+parser.add_argument('--batchsize', dest='batch_size',
+                    type=int, default=32,
+                    help='Should use binary classifier and label to classify.')
 parser.add_argument('--dataset', '-d', dest='dataset',
-                    default="ffhq", type=str,
-                    help='set dataset for classifier (default: ffhq)')
-
+                    type=str, default="ffhq",
+                    help='Dataset to use.')
+parser.add_argument('--columns', '-c', dest='columns', nargs='+',
+                    help='Dataset to use.')
+parser.add_argument('--shuffle', '-s', dest='shuffle',
+                    action='store_true', default=True,
+                    help='Should the dataset be shuffled.')
 
 args = parser.parse_args()
 
+print(tf.config.experimental.list_physical_devices(device_type=None))
 
-model = Model(feature=args.label, epochs=args.epochs,
-              test=args.test, dataset=args.dataset)
+print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
+if args.run_name:
+    print("training: "+args.run_name)
+
+model = get_model(args.model, args.run_name)
+
 model.load_weights()
+train_generator, validation_generator, columns = get_training_data(
+    args.batch_size, args.dataset, args.shuffle)
+model.fit(train_generator, validation_generator, columns, epochs=args.epochs)
+model.plot_training()
 
-history = model.fit()
+datasets = ["ffhq", "ffhqgenerated", "overall"]
+for dataset in datasets:
+    test_generator, columns = get_testing_data(dataset)
+    evaluation = model.evaluate(test_generator, dataset)
+    print(evaluation)
+    genderCf, ageCf = model.confusion_matrix(test_generator, dataset)
+    print(genderCf)
+    print(ageCf)
+
 model.save()
-
-print(history)
-# https://www.tensorflow.org/tutorials/images/classification#visualize_training_results
-try:
-    acc = history.history['accuracy']
-    val_acc = history.history['val_accuracy']
-except:
-    acc = history.history['acc']
-    val_acc = history.history['val_acc']
-
-
-loss = history.history['loss']
-val_loss = history.history['val_loss']
-
-epochs_range = range(args.epochs)
-
-plt.figure(figsize=(8, 8))
-plt.subplot(1, 2, 1)
-plt.plot(epochs_range, acc, label='Training Accuracy')
-plt.plot(epochs_range, val_acc, label='Validation Accuracy')
-plt.legend(loc='lower right')
-plt.title('Training and Validation Accuracy')
-
-plt.subplot(1, 2, 2)
-plt.plot(epochs_range, loss, label='Training Loss')
-plt.plot(epochs_range, val_loss, label='Validation Loss')
-plt.legend(loc='upper right')
-plt.title('Training and Validation Loss')
-plt.show()
-model.evaluate()
