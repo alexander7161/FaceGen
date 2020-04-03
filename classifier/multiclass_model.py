@@ -34,7 +34,8 @@ class MulticlassNNModel(Model):
 
 
 class MulticlassCNNModel(Model):
-    """A CNN classifier that classifies multiple labels and multiple classes."""
+    """A CNN classifier that classifies multiple labels and multiple classes.
+        Linear activation functions"""
 
     def __init__(self, outputs, run_name=None, save_checkpoints=True):
         super().__init__(outputs, run_name, save_checkpoints)
@@ -62,7 +63,8 @@ class MulticlassCNNModel(Model):
 
 
 class MulticlassCNNDropoutModel(Model):
-    """A CNN classifier that classifies multiple labels and multiple classes."""
+    """A CNN classifier that classifies multiple labels and multiple classes.
+        CNN Strucure with dropout and linear activation functions. """
 
     def __init__(self, outputs, run_name=None, save_checkpoints=True):
         super().__init__(outputs, run_name, save_checkpoints)
@@ -93,9 +95,10 @@ class MulticlassCNNDropoutModel(Model):
         return model
 
 
-class MulticlassCNNOptimisedModel(Model):
+class MulticlassCNNReluActivationDropoutModel(Model):
     """A CNN classifier that classifies multiple labels and multiple classes.
-        With Dropout and relu activation."""
+        With Dropout and relu activation functions.
+        Model set out in Design Chapter."""
 
     def __init__(self, outputs, run_name=None, save_checkpoints=True):
         super().__init__(outputs, run_name, save_checkpoints)
@@ -128,7 +131,7 @@ class MulticlassCNNOptimisedModel(Model):
 
 class CNN6LayerModel(Model):
     """A CNN classifier that classifies multiple labels and multiple classes.
-        With Dropout and relu activation."""
+        With Dropout and relu activation and 6 convolutional layers."""
 
     def __init__(self, outputs, run_name=None, save_checkpoints=True):
         super().__init__(outputs, run_name, save_checkpoints)
@@ -166,3 +169,72 @@ class CNN6LayerModel(Model):
                       metrics=['accuracy'])
 
         return model
+
+class CNN4LayerModel(Model):
+    """A CNN classifier that classifies multiple labels and multiple classes.
+        With Dropout and relu activation and 4 convolutional layers."""
+
+    def __init__(self, outputs, run_name=None, save_checkpoints=True):
+        super().__init__(outputs, run_name, save_checkpoints)
+
+    def get_model(self, outputs):
+        """
+        Activation layers added
+        """
+        model = Sequential([
+            Conv2D(32, (3, 3), padding='same',
+                   input_shape=(IMG_HEIGHT, IMG_WIDTH, 3), activation='relu'),
+            Conv2D(32, (3, 3), activation='relu'),
+            MaxPooling2D(pool_size=(2, 2)),
+            Dropout(0.25),
+            Conv2D(64, (3, 3), padding='same', activation='relu'),
+            Conv2D(64, (3, 3), activation='relu'),
+            MaxPooling2D(pool_size=(2, 2)),
+            Dropout(0.25),
+            Conv2D(64, (3, 3), activation='relu'),
+            MaxPooling2D(pool_size=(2, 2)),
+            Dropout(0.25),
+            Flatten(),
+            Dense(512, activation='relu'),
+            Dropout(0.5),
+            Dense(outputs, activation='sigmoid'),
+        ])
+
+        # Binary_crossentropy from https://github.com/keras-team/keras/issues/741
+        model.compile("adam", loss="binary_crossentropy",
+                      metrics=['accuracy'])
+
+        return model
+
+class VGGLikeModel(Model):
+    """A CNN classifier that classifies multiple labels and multiple classes.
+        With Dropout and relu activation.
+        from http://keras.io/getting-started/sequential-model-guide/"""
+
+    def __init__(self, outputs, run_name=None, save_checkpoints=True):
+        super().__init__(outputs, run_name, save_checkpoints)
+
+    def get_model(self, outputs):
+        """
+        Activation layers added
+        """
+        model = Sequential([
+            Conv2D(32, (3, 3), activation='relu', input_shape=(IMG_HEIGHT, IMG_WIDTH, 3)),
+            Conv2D(32, (3, 3), activation='relu'),
+            MaxPooling2D(pool_size=(2, 2)),
+            Dropout(0.25),
+
+            Conv2D(64, (3, 3), activation='relu'),
+            Conv2D(64, (3, 3), activation='relu'),
+            MaxPooling2D(pool_size=(2, 2)),
+            Dropout(0.25),
+
+            Flatten(),
+            Dense(256, activation='relu'),
+            Dropout(0.5),
+            Dense(outputs, activation='softmax')
+        ])
+        model.compile("adam", loss='binary_crossentropy', metrics=['accuracy'])
+
+        return model
+
