@@ -36,7 +36,7 @@ def get_run_folder():
 
 
 # self made Kfold cross validation.
-crossValAccuracy = crossValidation.trainTestSplit(
+crossValMeanAccuracy, crossValStD = crossValidation.trainTestSplit(
     classifier=type(model),run_name=run_name, epochs=args.epochs)
 from os import makedirs
 try:
@@ -44,6 +44,7 @@ try:
 except:
     pass
 with open(get_run_folder()+'/crossValScore.txt', 'w') as file:
-    file.write(str(crossValAccuracy))
+    file.write("Accuracy: " + str(crossValMeanAccuracy))
+    file.write("std: " + str(crossValStD))
 
-print("My cross validation Accuracy: %.4f" % crossValAccuracy)
+print("My cross validation Accuracy: %.4f" % crossValMeanAccuracy)

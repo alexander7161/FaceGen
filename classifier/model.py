@@ -27,13 +27,14 @@ class Model():
             self.run_name = datetime.now().strftime("%d_%m_%Y-%H_%M_%S")
         self.callbacks = self.get_callbacks(save_checkpoints)
         self.model = self.get_model(outputs)
-        try:
-            os.mkdir(self.get_run_folder())
-        except:
-            pass
 
     def get_run_folder(self):
-        return "runs/"+self.run_name
+        run_folder = "runs/%s" % self.run_name
+        try:
+            os.mkdir(run_folder)
+        except:
+            pass
+        return run_folder
 
     def get_checkpoint_folder(self):
         return self.get_run_folder() + "/checkpoints/cp.ckpt"

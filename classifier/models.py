@@ -1,5 +1,5 @@
 from binary_model import BinaryModel
-from multiclass_model import MulticlassCNNModel, MulticlassNNModel, MulticlassCNNDropoutModel, MulticlassCNNOptimisedModel,CNN6LayerModel
+from multiclass_model import MulticlassCNNModel, MulticlassNNModel, MulticlassCNNDropoutModel, MulticlassCNNReluActivationDropoutModel, CNN6LayerModel, CNN4LayerModel, VGGLikeModel
 
 def get_model(model, run_name):
     if model == "binary":
@@ -12,5 +12,11 @@ def get_model(model, run_name):
         return MulticlassCNNDropoutModel(outputs=4, run_name=run_name)
     elif model == "6layer":
         return CNN6LayerModel(outputs=4, run_name=run_name)
+    elif model == "4layer":
+        return CNN4LayerModel(outputs=4, run_name=run_name)
+    elif model == "vgglike":
+        return VGGLikeModel(outputs=4, run_name=run_name)
+    elif model == "reludropout":
+        return MulticlassCNNReluActivationDropoutModel(output=4, run_name=run_name)
     else:
-        return MulticlassCNNOptimisedModel(outputs=4, run_name=run_name)
+        return MulticlassCNNReluActivationDropoutModel(outputs=4, run_name=run_name)

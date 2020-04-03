@@ -72,12 +72,12 @@ class CrossVal(object):
             class_mode='raw',
             seed=1)
 
-        c = classifier(outputs=4, run_name=run_name, save_checkpoints=False)
+        c = classifier(outputs=4, run_name=run_name)
         # Train classifier on training data.
-        c.fit(train_generator, validation_generator, columns, epochs, verbose=False)
+        c.fit(train_generator, validation_generator, columns, epochs)
         # Get accuracy for the test data.
         test_generator, columns = get_testing_data("overall")
-        loss, accuracy = c.evaluate(test_generator, save_to_File=False)
+        loss, accuracy = c.evaluate(test_generator)
         return accuracy
 
     # Perfoms K-fold cross validation on the provided data and classifier.
@@ -90,9 +90,10 @@ class CrossVal(object):
         splits = self.createSplits(shuffledData, folds)
 
         # Collect accuracies for each fold.
-        accuracies = [self.getAccuracy(classifier, i, splits, columns, epochs,"%s%d"% (run_name,i))
+        accuracies = [self.getAccuracy(classifier, i, splits, columns, epochs,"%s/%d"% (run_name,i))
                       for i in range(folds)]
 
         # Compute mean accuracy.
         accuracy = np.mean(accuracies)
-        return accuracy
+        std = np.std(accuracies)
+        return accuracy, std
