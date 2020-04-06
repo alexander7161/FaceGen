@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - stable
+  - 8
 cache:
   npm: true
   directories:
@@ -17,6 +17,7 @@ jobs:
         - npm i -g firebase firebase-tools
         - firebase setup:emulators:firestore
         - npm install --prefix ./firestore/
+        - npm rebuild --prefix ./firestore/
         - npm run firestore-test --prefix ./firestore/
     - script:
         - npm install --prefix ./frontend/
