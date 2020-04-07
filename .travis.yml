@@ -3,6 +3,7 @@ node_js:
   - 8.13.0
 cache:
   npm: true
+  yarn: true
   directories:
     - firestore/node_modules
     - frontend/node_modules
@@ -19,15 +20,15 @@ jobs:
         - npm install --prefix ./firestore/
         - npm run firestore-test --prefix ./firestore/
     - script:
-        - npm install --prefix ./frontend/
+        - yarn --cwd "./frontend" install
         - npm run test --prefix ./frontend/ -- --passWithNoTests
       name: frontend
     - stage: deploy
       script:
         - npm install --prefix ./functions/
         - npm run build --prefix ./functions/
-        - npm install --prefix ./frontend/
-        - npm run build  --prefix ./frontend/
+        - yarn --cwd "./frontend" install
+        - yarn --cwd "./frontend" build
       if: branch = master OR branch = develop
       deploy:
         skip_cleanup: true
