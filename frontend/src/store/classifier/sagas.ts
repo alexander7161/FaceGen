@@ -20,6 +20,9 @@ import {
 import { classifierModelSelector, modelLoadedSelector } from "./selector";
 import { eventChannel } from "redux-saga";
 
+/**
+ * Load model from web server saga.
+ */
 function* loadModelSaga() {
   try {
     const model = yield tf.loadLayersModel("tfjs/model.json");
