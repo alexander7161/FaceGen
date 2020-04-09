@@ -5,7 +5,7 @@ import {
   take,
   fork,
   cancel,
-  call
+  call,
 } from "redux-saga/effects";
 import * as tf from "@tensorflow/tfjs";
 import {
@@ -15,7 +15,7 @@ import {
   predictionSuccess,
   predictionFailure,
   startWebcamPrediction,
-  stopWebcamPrediction
+  stopWebcamPrediction,
 } from ".";
 import { classifierModelSelector, modelLoadedSelector } from "./selector";
 import { eventChannel } from "redux-saga";
@@ -29,8 +29,12 @@ function* loadModelSaga() {
   }
 }
 
+/**
+ * Function for a 1 second eventChannel timer.
+ * Will emit every 1 second.
+ */
 function timer() {
-  return eventChannel(emitter => {
+  return eventChannel((emitter) => {
     const iv = setInterval(() => {
       emitter("");
     }, 1000);
@@ -40,38 +44,54 @@ function timer() {
   });
 }
 
+/**
+ * Task for predicting the current webcam image class once per second.
+ */
 function* predictionTaskSaga() {
+  // Get webcam image from DOM.
   let image = document.getElementById("webcam") as HTMLVideoElement;
+  // Get the classifier model from state.
   const modelLoaded: boolean = yield select(modelLoadedSelector);
   let model: tf.LayersModel | null = yield select(classifierModelSelector);
   if (!modelLoaded) {
+    // If model is not loaded, load it and wait for success.
     yield put(loadModel());
     const { payload } = yield take(loadModelSuccess);
+    // Use the most recently loaded model.
     model = payload;
   }
   const chan = yield call(timer);
 
   try {
     while (true) {
+      // Wait for timer to emit. Will emit every 1 second.
       yield take(chan);
+      // Take the image from the webcam. Resize to 150x150. Adapt to fit model expected input.
       let tensor = tf.browser
         .fromPixels(image)
         .resizeNearestNeighbor([150, 150])
         .toFloat()
         .expandDims();
+      // Run prediction
       const result = model!.predict(tensor);
+      // Get predictions array.
       const predictions:
         | Float32Array
         | Int32Array
         | Uint8Array = yield (result as tf.Tensor<tf.Rank>)
         .asType("float32")
         .data();
-      let classes = ["gender", "senior", "adult", "child"];
+      console.log(predictions);
 
+      let classes = ["gender", "senior", "adult", "child"];
+      // Gender based on first bit.
       const gender = predictions[0] === 1 ? "female" : "male";
+      // Get argmax of the remaining bits.
+      const agePredictions = predictions.slice(1);
       const ageIndex: tf.backend_util.TypedArray = yield tf
-        .argMax(predictions.slice(1, predictions.length))
+        .argMax(agePredictions)
         .data();
+      // Get Ageindex result and add one to get the age label.
       const age = classes[ageIndex[0] + 1];
       const labels = [gender, age];
       yield put(predictionSuccess(labels));
@@ -80,6 +100,12 @@ function* predictionTaskSaga() {
   }
 }
 
+/**
+ * Wait for startWebcamPrediction action.
+ * Run predictionTaskSaga in background.
+ * When stopWebcamPrediction is dispatched cancel the background task.
+ *
+ */
 function* predictImageSaga() {
   try {
     while (yield take(startWebcamPrediction)) {
@@ -93,6 +119,8 @@ function* predictImageSaga() {
 }
 
 export default function* root() {
+  // Run loadModelSaga on loadModel Action
   yield takeLatest(loadModel, loadModelSaga);
+  // Run the predictImageSaga in the background.
   yield fork(predictImageSaga);
 }

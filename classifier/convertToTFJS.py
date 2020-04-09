@@ -7,10 +7,9 @@ parser = ArgumentParser()
 parser.add_argument('--runname', '-n', dest='run_name',
                     type=str,
                     help='Name for this run, will otherwise not try to load model.')
-
 args = parser.parse_args()
 
-# Convert the model.
 model = tf.keras.models.load_model("runs/"+args.run_name+"/model")
 
+# inspired by https://www.tensorflow.org/js/tutorials/conversion/import_keras
 tfjs.converters.save_keras_model(model, "runs/"+args.run_name+"/tfjs")

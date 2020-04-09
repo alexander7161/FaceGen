@@ -2,11 +2,10 @@ import { takeEvery, call, put } from "redux-saga/effects";
 import rsf from "../../rsf";
 import { signIn, signInAnonymously, signInWithGoogle, setUser } from "..";
 import { push } from "connected-react-router";
-import * as firebase from "firebase/app";
-import "firebase/auth";
+import firebase from "firebase";
 
 function* signInSaga({
-  payload: { email, password }
+  payload: { email, password },
 }: ReturnType<typeof signIn>) {
   try {
     yield call(rsf.auth.signInWithEmailAndPassword, email, password);
