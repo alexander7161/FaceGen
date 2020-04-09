@@ -7,7 +7,7 @@ import {
   predictionSelector,
   predictionErrorSelector,
   modelLoadingSelector,
-  modelLoadingErrorSelector
+  modelLoadingErrorSelector,
 } from "../store/classifier/selector";
 import PredictButton from "../components/PredictButton";
 const StyledContainer = styled(Container)`
@@ -29,7 +29,7 @@ const Prediction = () => {
 
   return (
     <>
-      {prediction?.map(p => (
+      {prediction?.map((p) => (
         <Chip key={p} label={p} />
       ))}
     </>
@@ -38,20 +38,22 @@ const Prediction = () => {
 
 const PredictionPage = () => {
   const modelLoading = useSelector(modelLoadingSelector);
+  const [webcamError, setWebcamError] = React.useState(false);
 
   return (
     <>
       <StyledContainer maxWidth="sm">
-        <WebcamCapture />
+        {webcamError && <>Webcam error</>}
+        <WebcamCapture onError={(error: string) => setWebcamError(true)} />
         <div style={{ display: "flex", flexDirection: "row" }}>
           <Prediction />
-          <PredictButton />
         </div>
+        <PredictButton disabled={webcamError} />
       </StyledContainer>
       <Snackbar
         anchorOrigin={{
           vertical: "bottom",
-          horizontal: "left"
+          horizontal: "left",
         }}
         open={modelLoading}
         message="Model loading"

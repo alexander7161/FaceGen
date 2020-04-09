@@ -78,13 +78,11 @@ function* predictionTaskSaga() {
       // Run prediction
       const result = model!.predict(tensor);
       // Get predictions array.
-      const predictions:
-        | Float32Array
-        | Int32Array
-        | Uint8Array = yield (result as tf.Tensor<tf.Rank>)
+      const predictions: tf.backend_util.TypedArray = yield (result as tf.Tensor<
+        tf.Rank
+      >)
         .asType("float32")
         .data();
-      console.log(predictions);
 
       let classes = ["gender", "senior", "adult", "child"];
       // Gender based on first bit.
@@ -100,6 +98,7 @@ function* predictionTaskSaga() {
       yield put(predictionSuccess(labels));
     }
   } finally {
+    // Prediction task cancelled.
   }
 }
 
