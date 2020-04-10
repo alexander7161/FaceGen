@@ -3,7 +3,7 @@ import firebase from "../../../fbConfig";
 import { setUser } from "../../user";
 import { syncCollection } from "../../utils/firestoreSync";
 import { receiveFaces } from "..";
-import { firestore } from "firebase";
+import type { firestore } from "firebase";
 
 type FirebaseGeneratedFaceData = GeneratedFaceData & {
   timeCreated: number | firestore.Timestamp;
@@ -35,7 +35,7 @@ function* syncFacesSaga({ payload }: ReturnType<typeof setUser>) {
             : f.timeCreated,
           timeCompleted: isTimestamp(f.timeCompleted)
             ? +f.timeCompleted.toDate()
-            : f.timeCompleted
+            : f.timeCompleted,
         })
       )
     );

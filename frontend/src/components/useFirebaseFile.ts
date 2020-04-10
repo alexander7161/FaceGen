@@ -1,5 +1,5 @@
 import React from "react";
-import { storage } from "firebase";
+import firebase from "../fbConfig";
 
 const useFirebaseFile = (storageRef: string) => {
   const [fileURL, setFileURL] = React.useState<string | undefined>(undefined);
@@ -7,7 +7,7 @@ const useFirebaseFile = (storageRef: string) => {
     try {
       (async () => {
         if (storageRef) {
-          const pathReference = storage().ref(storageRef);
+          const pathReference = firebase.storage().ref(storageRef);
           const fileURL = await pathReference.getDownloadURL();
           setFileURL(fileURL);
         }
