@@ -84,3 +84,5 @@ classifier/runs
 .vscode/
 
 classifier/result.png
+
+.lighthouseci
