@@ -1,7 +1,6 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import styled from "styled-components";
-import { Fab, CircularProgress } from "@material-ui/core";
+import { CircularProgress } from "@material-ui/core";
 import {
   predictingSelector,
   modelLoadingSelector,

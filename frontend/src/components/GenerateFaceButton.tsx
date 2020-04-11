@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { generateFace } from "../store/generator";
 import styled from "styled-components";
 import Add from "@material-ui/icons/Add";
-import { Fab, CircularProgress } from "@material-ui/core";
+import { CircularProgress } from "@material-ui/core";
 import { selectGenerateLoading } from "../store/generator/selectors";
 import AbsoluteFab from "./AbsoluteFab";
 
