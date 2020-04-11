@@ -10,13 +10,7 @@ import {
   startWebcamPrediction,
   stopWebcamPrediction,
 } from "../store/classifier";
-
-const AbsoluteFab = styled(Fab)`
-  position: fixed;
-  bottom: 24px;
-  right: 16px;
-  min-width: 100px;
-`;
+import AbsoluteFab from "./AbsoluteFab";
 
 const PredictButton = ({ disabled }: { disabled?: boolean }) => {
   const dispatch = useDispatch();
