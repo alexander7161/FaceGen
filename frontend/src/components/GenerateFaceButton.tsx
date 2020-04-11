@@ -5,16 +5,10 @@ import styled from "styled-components";
 import Add from "@material-ui/icons/Add";
 import { Fab, CircularProgress } from "@material-ui/core";
 import { selectGenerateLoading } from "../store/generator/selectors";
+import AbsoluteFab from "./AbsoluteFab";
 
 const AddIcon = styled(Add)`
   margin-right: 4px;
-`;
-
-const AbsoluteFab = styled(Fab)`
-  position: fixed;
-  bottom: 24px;
-  right: 16px;
-  min-width: 100px;
 `;
 
 const GenerateFaceButton = () => {
