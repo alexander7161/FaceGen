@@ -4,11 +4,11 @@ import styled from "styled-components";
 import { Fab, CircularProgress } from "@material-ui/core";
 import {
   predictingSelector,
-  modelLoadingSelector
+  modelLoadingSelector,
 } from "../store/classifier/selector";
 import {
   startWebcamPrediction,
-  stopWebcamPrediction
+  stopWebcamPrediction,
 } from "../store/classifier";
 
 const AbsoluteFab = styled(Fab)`
@@ -18,7 +18,7 @@ const AbsoluteFab = styled(Fab)`
   min-width: 100px;
 `;
 
-const PredictButton = () => {
+const PredictButton = ({ disabled }: { disabled?: boolean }) => {
   const dispatch = useDispatch();
   const predicting = useSelector(predictingSelector);
   const modelLoading = useSelector(modelLoadingSelector);
@@ -35,7 +35,7 @@ const PredictButton = () => {
       onClick={predict}
       variant="extended"
       color="primary"
-      disabled={modelLoading}
+      disabled={disabled || modelLoading}
     >
       {modelLoading ? <CircularProgress /> : predicting ? "Stop" : "Start"}
     </AbsoluteFab>

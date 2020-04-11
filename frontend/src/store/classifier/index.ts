@@ -1,59 +1,80 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import * as tf from "@tensorflow/tfjs";
 
+/**
+ * Redux store for webcam classifier.
+ * loads and stores the model.
+ * Stores predictions from the model.
+ */
 const initialState: {
-  loading: boolean;
-  modelLoadingError: null | Error;
-  model: null | tf.LayersModel;
-  modelLoaded: boolean;
-  prediction?: string[];
-  prediciting: boolean;
-  predictionError: null | Error;
+  model: {
+    loading: boolean;
+    model: null | tf.LayersModel;
+    loaded: boolean;
+    error: null | Error;
+  };
+  prediction: {
+    prediction?: string[];
+    prediciting: boolean;
+    error: null | Error;
+  };
 } = {
-  loading: false,
-  modelLoadingError: null,
-  model: null,
-  modelLoaded: false,
-  prediction: undefined,
-  prediciting: false,
-  predictionError: null
+  model: {
+    loading: false,
+    model: null,
+    loaded: false,
+    error: null,
+  },
+  prediction: {
+    prediction: undefined,
+    prediciting: false,
+    error: null,
+  },
 };
 
 const classifierSlice = createSlice({
   name: "classifier",
   initialState,
   reducers: {
+    // Action to load the model. Resets the model state.
     loadModel(state) {
-      state.loading = true;
-      state.modelLoadingError = null;
-      state.modelLoaded = false;
+      state.model.loading = true;
+      state.model.error = null;
+      state.model.loaded = false;
     },
+    // On model loading success.
     loadModelSuccess(state, action: PayloadAction<tf.LayersModel>) {
-      state.loading = false;
-      state.model = action.payload;
-      state.modelLoaded = true;
+      state.model.loading = false;
+      state.model.model = action.payload;
+      state.model.loaded = true;
     },
+    // Model loading failure
     loadModelFailure(state, action: PayloadAction<Error>) {
-      state.loading = false;
-      state.modelLoadingError = action.payload;
-      state.modelLoaded = false;
+      state.model.loading = false;
+      state.model.error = action.payload;
+      state.model.loaded = false;
     },
+    // Action to set predicting to true.
     startWebcamPrediction(state) {
-      state.prediciting = true;
-      state.predictionError = null;
+      state.prediction.prediciting = true;
+      state.prediction.error = null;
     },
+    // Action to stop webcam predicting and reset prediction state.
     stopWebcamPrediction(state) {
-      state.prediciting = false;
-      state.prediction = undefined;
-      state.predictionError = null;
+      state.prediction.prediciting = false;
+      state.prediction.prediction = undefined;
+      state.prediction.error = null;
     },
+    // Set the current prediction in state.
     predictionSuccess(state, action: PayloadAction<string[]>) {
-      state.prediction = action.payload;
+      state.prediction.prediction = action.payload;
     },
+    // Prediction failure action.
     predictionFailure(state, action: PayloadAction<Error>) {
-      state.predictionError = action.payload;
-    }
-  }
+      state.prediction.error = action.payload;
+      state.prediction.prediction = undefined;
+    },
+  },
 });
 // Extract the action creators object and the reducer
 const { actions, reducer } = classifierSlice;
@@ -65,7 +86,7 @@ export const {
   startWebcamPrediction,
   stopWebcamPrediction,
   predictionSuccess,
-  predictionFailure
+  predictionFailure,
 } = actions;
 // Export the reducer, either as a default or named export
 export default reducer;

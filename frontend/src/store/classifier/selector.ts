@@ -1,18 +1,21 @@
 import { AppState } from "..";
+/**
+ * Selectors for Classifier redux state
+ */
 
 export const classifierModelSelector = (state: AppState) =>
-  state.classifier.model;
+  state.classifier.model.model;
 
 export const modelLoadedSelector = (state: AppState) =>
-  state.classifier.modelLoaded;
+  state.classifier.model.loaded;
 export const modelLoadingErrorSelector = (state: AppState) =>
-  state.classifier.modelLoadingError;
+  state.classifier.model.error;
 export const modelLoadingSelector = (state: AppState) =>
-  state.classifier.loading;
+  state.classifier.model.loading;
 
 export const predictionSelector = (state: AppState) =>
-  state.classifier.prediction;
+  state.classifier.prediction.prediction;
 export const predictingSelector = (state: AppState) =>
-  state.classifier.prediciting;
+  state.classifier.prediction.prediciting;
 export const predictionErrorSelector = (state: AppState) =>
-  state.classifier.predictionError;
+  state.classifier.prediction.error;

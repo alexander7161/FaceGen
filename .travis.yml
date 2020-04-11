@@ -1,6 +1,8 @@
 language: node_js
 node_js:
-  - 8.13.0
+  - node
+addons:
+  chrome: stable
 cache:
   npm: true
   yarn: true
@@ -37,3 +39,6 @@ jobs:
           secure: k1LqXcu9Yc+w2cyA0iaJqBeJ7B6SNgHWpXC6//OBn45prhnFuWCIrkQj3xngWUBgODkSPQAU6BHC0bmFpD9M/gvVLZ9+DlS0mP8KHbfTS7KWYP28VJqIakzUVg0M9/n9npyPTgLNanuw1q3DihEnHh90y6nmNhSvOewEC99hqhG86qXieU1/OIFXV5xbIaUXhyAVxBd9SFRrGiL/iPdOZ2m53UmcgbrvEIHpb9wTYZUg/pcpGrQyKs70vepv7HX1GImI1nE1t6DJx0PHkgQARYnOWp/Bfvel8Rdi69EsLOuRk70eW5sVm4blA/vPv/0h5ls2FZfmh0/f52uCriahgWqCQNI1vhStOQLzUB6tTzB1sgAFoFa+S3RjCwctjBBgp3vt7xWuxLaaNETXcvsMUDhMPqHz/ZIG5tU8Xg4GyQkIexbAuEF31Sc1V642tCv08RO4eFFPWfO2jc0pb0Pg46KkyfoRS0NukY/gho03B00B04lnb2BwGO4nAMMW7kF0NgE+CIysBAa06KOoZHveAdfD2BiiOSkFBZc0wwqSdx+Fy2keXr7kCoLXQahurtePR/NwqbBQsL2XXaCCzWq4HRAkNIZtcxPh92ijKNDwpHtj0Ah16uehc0PaUdVh3EywmE1Wmf+/uaC1gCXOBBziQnE0MV5AF1TDm36EFD+eVk4=
         on:
           branch: master
+      after_deploy:
+        - npm install -g @lhci/cli@0.3.x
+        - lhci autorun --collect.numberOfRuns=3 --collect.url=https://facegen-fc9de.web.app/ --upload.target=temporary-public-storage

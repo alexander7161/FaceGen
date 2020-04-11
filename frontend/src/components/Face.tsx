@@ -12,7 +12,7 @@ import {
   CircularProgress,
   GridListTile,
   Typography,
-  Hidden
+  Hidden,
 } from "@material-ui/core";
 import { deleteFace } from "../store/faces";
 import styled from "styled-components";
@@ -25,7 +25,7 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 export const ImageContainer = ({
   f,
-  imageURL
+  imageURL,
 }: {
   f: GeneratedFaceData;
   imageURL?: string;
@@ -38,7 +38,7 @@ export const ImageContainer = ({
           width: "100%",
           display: "flex",
           alignItems: "center",
-          justifyContent: "center"
+          justifyContent: "center",
         }}
       >
         <Typography variant="h3">Error</Typography>
@@ -46,7 +46,11 @@ export const ImageContainer = ({
     );
   }
   return f.complete && f.storageRef ? (
-    <img alt="" src={imageURL} style={{ height: "100%", width: "100%" }} />
+    <img
+      alt=""
+      src={imageURL}
+      style={{ height: "100%", width: "100%", display: "flex" }}
+    />
   ) : (
     <CircularProgress style={{ height: "100%", width: "100%" }} />
   );
@@ -67,7 +71,7 @@ export const LabelContainer = ({ f }: { f: GeneratedFaceData }) => {
   } else if (f.labelsLoading === false) {
     return (
       <div>
-        {f.labels.map(l => (
+        {f.labels.map((l) => (
           <Chip key={l} label={l} />
         ))}
       </div>
@@ -80,7 +84,7 @@ export const LabelContainer = ({ f }: { f: GeneratedFaceData }) => {
 export const FaceMenu = ({
   f,
   imageURL,
-  color
+  color,
 }: {
   f: GeneratedFaceData;
   imageURL: string | undefined;
@@ -157,7 +161,7 @@ export const FaceMenu = ({
 
 const Face = ({
   f,
-  openFaceModal
+  openFaceModal,
 }: {
   f: GeneratedFaceData;
   openFaceModal: () => void;
@@ -177,7 +181,7 @@ const Face = ({
         <GridListTileBar
           title={new Date(f.timeCreated).toLocaleDateString(undefined, {
             hour: "2-digit",
-            minute: "2-digit"
+            minute: "2-digit",
           })}
           subtitle={<LabelContainer f={f} />}
           actionIcon={<FaceMenu f={f} imageURL={imageURL} />}

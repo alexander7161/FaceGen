@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Chip, Snackbar } from "@material-ui/core";
+import { Container, Chip, Snackbar, Typography } from "@material-ui/core";
 import styled from "styled-components";
 import WebcamCapture from "../components/Webcam";
 import { useSelector } from "react-redux";
@@ -7,7 +7,7 @@ import {
   predictionSelector,
   predictionErrorSelector,
   modelLoadingSelector,
-  modelLoadingErrorSelector
+  modelLoadingErrorSelector,
 } from "../store/classifier/selector";
 import PredictButton from "../components/PredictButton";
 const StyledContainer = styled(Container)`
@@ -29,7 +29,7 @@ const Prediction = () => {
 
   return (
     <>
-      {prediction?.map(p => (
+      {prediction?.map((p) => (
         <Chip key={p} label={p} />
       ))}
     </>
@@ -38,20 +38,24 @@ const Prediction = () => {
 
 const PredictionPage = () => {
   const modelLoading = useSelector(modelLoadingSelector);
+  const [webcamError, setWebcamError] = React.useState(false);
 
   return (
     <>
       <StyledContainer maxWidth="sm">
-        <WebcamCapture />
-        <div style={{ display: "flex", flexDirection: "row" }}>
-          <Prediction />
-          <PredictButton />
-        </div>
+        {webcamError && <>Webcam error</>}
+        <WebcamCapture onError={(error: string) => setWebcamError(true)} />
+        <Typography>
+          Please position your face in the centre of the image for best
+          accuracy.
+        </Typography>
+        <Prediction />
       </StyledContainer>
+      <PredictButton disabled={webcamError} />
       <Snackbar
         anchorOrigin={{
           vertical: "bottom",
-          horizontal: "left"
+          horizontal: "left",
         }}
         open={modelLoading}
         message="Model loading"

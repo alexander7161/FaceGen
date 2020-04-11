@@ -1,16 +1,15 @@
 import { put, call, debounce } from "redux-saga/effects";
 import { generateFace, generateFaceSuccess, generateFaceFailure } from ".";
-import firebase from "../../fbConfig";
 import rsf from "../rsf";
-import { firestore } from "firebase";
+import * as firebase from "firebase/app";
 
 const createFaceObjectSaga = async (userId: string) => {
   const faceRef = await firebase
     .firestore()
     .collection(`users/${userId}/faces`)
     .add({
-      timeCreated: firestore.FieldValue.serverTimestamp(),
-      complete: false
+      timeCreated: firebase.firestore.FieldValue.serverTimestamp(),
+      complete: false,
     });
   return faceRef.id;
 };
@@ -25,7 +24,6 @@ function* generateFaceSaga() {
         console.log(error);
       }
     }
-    console.log(user);
     user = firebase.auth().currentUser;
     if (user) {
       const faceId = yield createFaceObjectSaga(user.uid);
@@ -35,7 +33,7 @@ function* generateFaceSaga() {
         {
           method: "POST",
           headers: { authorization: `Bearer ${idToken}` },
-          body: JSON.stringify({ faceId })
+          body: JSON.stringify({ faceId }),
         }
       );
       const text: string = yield response.text();

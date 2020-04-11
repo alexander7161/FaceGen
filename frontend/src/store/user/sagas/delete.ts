@@ -1,17 +1,17 @@
 import { deleteAllFacesSaga } from "../../faces/sagas/delete";
-import firebase from "firebase";
 import { select, call, takeEvery, put } from "redux-saga/effects";
 import { userIdSelector } from "../selectors";
 import rsf from "../../rsf";
 import { deleteUser, signOut, signInWithGoogle } from "..";
 import { facesSelector } from "../../faces/selectors";
+import firebase from "../../../fbConfig";
 
 function* deleteUserSaga() {
   const faces: GeneratedFaceData[] | null = yield select(facesSelector);
   if (faces) {
     const dateNow = new Date();
     dateNow.setMinutes(dateNow.getMinutes() - 5);
-    const notCompleteAndNotOld = faces.filter(f => !f.complete);
+    const notCompleteAndNotOld = faces.filter((f) => !f.complete);
     if (notCompleteAndNotOld.length > 0) {
       console.error("wait for jobs to finish");
       return;
