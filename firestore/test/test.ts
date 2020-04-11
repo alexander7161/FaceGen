@@ -2,12 +2,17 @@
 import * as firebase from "@firebase/testing";
 import * as fs from "fs";
 
+/**
+ * Firestore rules testing.
+ * adapted from https://github.com/firebase/quickstart-nodejs/tree/master/firestore-emulator/typescript-quickstart
+ */
+
 /*
  * ============
  *    Setup
  * ============
  */
-const projectId = "firestore-emulator-example";
+const projectId = "facegen";
 const coverageUrl = `http://localhost:8080/emulator/v1/projects/${projectId}:ruleCoverage.html`;
 
 const rules = fs.readFileSync("firestore.rules", "utf8");
@@ -37,7 +42,7 @@ beforeEach(async () => {
 });
 
 after(async () => {
-  await Promise.all(firebase.apps().map(app => app.delete()));
+  await Promise.all(firebase.apps().map((app) => app.delete()));
   console.log(`View rule coverage information at ${coverageUrl}\n`);
 });
 
@@ -58,7 +63,7 @@ class MyApp {
     await firebase.assertSucceeds(
       profile.set({
         birthday: "January 1",
-        signupDate: firebase.firestore.FieldValue.serverTimestamp()
+        signupDate: firebase.firestore.FieldValue.serverTimestamp(),
       })
     );
   }
@@ -72,7 +77,7 @@ class MyApp {
         .doc("alice")
         .set({
           birthday: "January 1",
-          signupDate: firebase.firestore.FieldValue.serverTimestamp()
+          signupDate: firebase.firestore.FieldValue.serverTimestamp(),
         })
     );
     await firebase.assertFails(
@@ -81,7 +86,7 @@ class MyApp {
         .doc("bob")
         .set({
           birthday: "January 1",
-          signupDate: firebase.firestore.FieldValue.serverTimestamp()
+          signupDate: firebase.firestore.FieldValue.serverTimestamp(),
         })
     );
   }
@@ -94,7 +99,7 @@ class MyApp {
     await firebase.assertSucceeds(
       profile.set({
         birthday: "January 1",
-        signupDate: firebase.firestore.FieldValue.serverTimestamp()
+        signupDate: firebase.firestore.FieldValue.serverTimestamp(),
       })
     );
 
@@ -122,7 +127,7 @@ class MyApp {
       .doc("newFace");
     await firebase.assertSucceeds(
       room.set({
-        timeCreated: firebase.firestore.FieldValue.serverTimestamp()
+        timeCreated: firebase.firestore.FieldValue.serverTimestamp(),
       })
     );
   }
@@ -137,7 +142,7 @@ class MyApp {
       .doc("newFace");
     await firebase.assertSucceeds(
       room.set({
-        timeCreated: firebase.firestore.FieldValue.serverTimestamp()
+        timeCreated: firebase.firestore.FieldValue.serverTimestamp(),
       })
     );
 
@@ -149,7 +154,7 @@ class MyApp {
 
     await firebase.assertFails(
       room2.set({
-        test: "hello"
+        test: "hello",
       })
     );
   }
@@ -166,7 +171,7 @@ class MyApp {
         .collection("faces")
         .doc("bobsFace")
         .set({
-          timeCreated: firebase.firestore.FieldValue.serverTimestamp()
+          timeCreated: firebase.firestore.FieldValue.serverTimestamp(),
         })
     );
 
@@ -177,7 +182,7 @@ class MyApp {
         .collection("faces")
         .doc("bobsFace")
         .set({
-          test: "new"
+          test: "new",
         })
     );
   }
@@ -193,7 +198,7 @@ class MyApp {
 
     await firebase.assertSucceeds(
       faceRef.set({
-        timeCreated: firebase.firestore.FieldValue.serverTimestamp()
+        timeCreated: firebase.firestore.FieldValue.serverTimestamp(),
       })
     );
 
