@@ -41,4 +41,4 @@ jobs:
           branch: master
       after_deploy:
         - npm install -g @lhci/cli@0.3.x
-        - lhci autorun --collect.numberOfRuns=3 --collect.url=https://facegen-fc9de.web.app/ --upload.target=temporary-public-storage
+        - lhci autorun --collect.numberOfRuns=5 --collect.url=https://facegen-fc9de.web.app/ --upload.target=temporary-public-storage
