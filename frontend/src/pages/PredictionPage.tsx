@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Chip, Snackbar } from "@material-ui/core";
+import { Container, Chip, Snackbar, Typography } from "@material-ui/core";
 import styled from "styled-components";
 import WebcamCapture from "../components/Webcam";
 import { useSelector } from "react-redux";
@@ -45,11 +45,13 @@ const PredictionPage = () => {
       <StyledContainer maxWidth="sm">
         {webcamError && <>Webcam error</>}
         <WebcamCapture onError={(error: string) => setWebcamError(true)} />
-        <div style={{ display: "flex", flexDirection: "row" }}>
-          <Prediction />
-        </div>
-        <PredictButton disabled={webcamError} />
+        <Typography>
+          Please position your face in the centre of the image for best
+          accuracy.
+        </Typography>
+        <Prediction />
       </StyledContainer>
+      <PredictButton disabled={webcamError} />
       <Snackbar
         anchorOrigin={{
           vertical: "bottom",
