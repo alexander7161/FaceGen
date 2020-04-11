@@ -1,7 +1,6 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import styled from "styled-components";
-import { Fab, CircularProgress } from "@material-ui/core";
+import { CircularProgress } from "@material-ui/core";
 import {
   predictingSelector,
   modelLoadingSelector,
@@ -10,13 +9,7 @@ import {
   startWebcamPrediction,
   stopWebcamPrediction,
 } from "../store/classifier";
-
-const AbsoluteFab = styled(Fab)`
-  position: fixed;
-  bottom: 24px;
-  right: 16px;
-  min-width: 100px;
-`;
+import AbsoluteFab from "./AbsoluteFab";
 
 const PredictButton = ({ disabled }: { disabled?: boolean }) => {
   const dispatch = useDispatch();
