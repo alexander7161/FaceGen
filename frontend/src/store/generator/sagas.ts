@@ -3,6 +3,10 @@ import { generateFace, generateFaceSuccess, generateFaceFailure } from ".";
 import rsf from "../rsf";
 import * as firebase from "firebase/app";
 
+/**
+ * Function to create a face object with random ID for a given user.
+ * @param userId
+ */
 const createFaceObjectSaga = async (userId: string) => {
   const faceRef = await firebase
     .firestore()
@@ -14,10 +18,15 @@ const createFaceObjectSaga = async (userId: string) => {
   return faceRef.id;
 };
 
+/**
+ * Saga to initiate face generation.
+ *
+ */
 function* generateFaceSaga() {
   try {
     let user: firebase.User | null = firebase.auth().currentUser;
     if (!user) {
+      // If user not signed in, sign in anonymously.
       try {
         user = yield call(rsf.auth.signInAnonymously);
       } catch (error) {
@@ -28,6 +37,7 @@ function* generateFaceSaga() {
     if (user) {
       const faceId = yield createFaceObjectSaga(user.uid);
       const idToken: string = yield user.getIdToken();
+      // Generate Face.
       const response: Response = yield fetch(
         "https://us-central1-facegen-fc9de.cloudfunctions.net/api/generateFace",
         {
@@ -36,10 +46,10 @@ function* generateFaceSaga() {
           body: JSON.stringify({ faceId }),
         }
       );
-      const text: string = yield response.text();
       if (response.ok) {
         yield put(generateFaceSuccess());
       } else {
+        const text: string = yield response.text();
         yield put(generateFaceFailure(new Error(text)));
       }
     } else {
@@ -52,5 +62,6 @@ function* generateFaceSaga() {
 }
 
 export default function* root() {
+  // Prevent generating more than one face per 5 seconds.
   yield debounce(5000, generateFace, generateFaceSaga);
 }

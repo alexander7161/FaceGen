@@ -1,15 +1,16 @@
-import { put, takeEvery, call } from "redux-saga/effects";
-import { push } from "connected-react-router";
+import { takeEvery, call } from "redux-saga/effects";
 import rsf from "../../rsf";
 import { signOut } from "..";
 
+/**
+ * Signout user saga.
+ * Unsubscribes firestore listeners.
+ */
 function* signoutUserSaga() {
-  yield put(push(`/`));
   try {
     yield call(rsf.auth.signOut);
-    console.log("signOut succesful");
   } catch (error) {
-    console.log(error.message);
+    console.error(error.message);
   }
 }
 

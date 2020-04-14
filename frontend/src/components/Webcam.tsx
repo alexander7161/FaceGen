@@ -1,6 +1,9 @@
 import React from "react";
 import Webcam from "react-webcam";
 
+/**
+ * Component to display a square webcam view for live classification.
+ */
 const WebcamView = ({ onError }: { onError?: (error: string) => void }) => {
   return (
     <Webcam

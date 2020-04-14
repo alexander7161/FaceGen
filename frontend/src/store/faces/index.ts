@@ -7,21 +7,27 @@ const initialState: {
 } = {
   faces: null,
   error: null,
-  loading: true
+  loading: true,
 };
-
+/**
+ * Redux state to store current faces.
+ * Synced from firestore.
+ */
 const facesSlice = createSlice({
   name: "faces",
   initialState,
   reducers: {
+    // When new faces are recieved, set the faces array with the new data.
     receiveFaces(state, action: PayloadAction<GeneratedFaceData[] | null>) {
       state.faces = action.payload;
       state.error = null;
       state.loading = false;
     },
+    // Delete a single faces based on ID.
     deleteFace(state, action: PayloadAction<string>) {},
-    deleteAllFaces(state) {}
-  }
+    // Delete all faces belonging to a user.
+    deleteAllFaces(state) {},
+  },
 });
 // Extract the action creators object and the reducer
 const { actions, reducer } = facesSlice;

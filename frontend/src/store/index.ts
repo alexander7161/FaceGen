@@ -13,6 +13,7 @@ const saga = createSagaMiddleware();
 const store = configureStore({
   reducer,
   middleware: [saga, routerMiddleware(history)],
+  devTools: process.env.NODE_ENV === "development",
 });
 // Run saga middleware.
 saga.run(AppSagas);
