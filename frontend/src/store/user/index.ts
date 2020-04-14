@@ -7,33 +7,43 @@ const initialState: {
 } = {
   user: null,
   userData: null,
-  error: null
+  error: null,
 };
 
+/**
+ * Redux state to store user data.
+ */
 const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
+    // Set user object.
     setUser(state, action: PayloadAction<firebase.User | null>) {
       state.user = action.payload;
       state.error = null;
     },
+    // Set user error.
     setUserError(state, action: PayloadAction<Error | null>) {
       state.error = action.payload;
     },
+    // Set the data for the current user.
     setUserData(state, action: PayloadAction<UserData | null>) {
       state.userData = action.payload;
       state.error = null;
     },
+    // Error on fetching user data.
     setUserDataError(state, action: PayloadAction<Error | null>) {
       state.error = action.payload;
     },
-    signIn(state, action) {},
+    // Sign out current user, stop all firestore syncs.
     signOut() {},
+    // Sign in anonymously.
     signInAnonymously(state, action) {},
+    // Sign in with google.
     signInWithGoogle() {},
-    deleteUser() {}
-  }
+    // Delete the current user.
+    deleteUser() {},
+  },
 });
 // Extract the action creators object and the reducer
 const { actions, reducer } = userSlice;
@@ -41,12 +51,11 @@ const { actions, reducer } = userSlice;
 export const {
   setUser,
   setUserError,
-  signIn,
   signOut,
   setUserData,
   signInAnonymously,
   signInWithGoogle,
-  deleteUser
+  deleteUser,
 } = actions;
 // Export the reducer, either as a default or named export
 export default reducer;

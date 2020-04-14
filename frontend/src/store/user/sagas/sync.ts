@@ -3,6 +3,9 @@ import rsf from "../../rsf";
 import { setUser, setUserError, setUserData } from "..";
 import { syncDocument } from "../../utils/firestoreSync";
 
+/**
+ * Sync user auth.
+ */
 function* syncUserSaga() {
   const channel = yield call(rsf.auth.channel);
   while (true) {
@@ -13,10 +16,14 @@ function* syncUserSaga() {
     yield put(setUser(userJson));
     if (error) {
       yield put(setUserError(error));
+      yield put(setUser(null));
     }
   }
 }
 
+/**
+ * Saga to sync user data when user changes.
+ */
 function* syncUserDataSaga({ payload }: ReturnType<typeof setUser>) {
   if (payload) {
     yield fork(syncDocument(`users/${payload.uid}`, setUserData));
