@@ -4,19 +4,11 @@ import rsf from "../rsf";
 import * as firebase from "firebase/app";
 
 /**
- * Function to create a face object with random ID for a given user.
+ * Function to get a new face id for a given user.
  * @param userId
  */
-const createFaceObjectSaga = async (userId: string) => {
-  const faceRef = await firebase
-    .firestore()
-    .collection(`users/${userId}/faces`)
-    .add({
-      timeCreated: firebase.firestore.FieldValue.serverTimestamp(),
-      complete: false,
-    });
-  return faceRef.id;
-};
+const getNewFaceId = (userId: string) =>
+  firebase.firestore().collection(`users/${userId}/faces`).doc().id;
 
 /**
  * Saga to initiate face generation.
@@ -35,7 +27,7 @@ function* generateFaceSaga() {
     }
     user = firebase.auth().currentUser;
     if (user) {
-      const faceId = yield createFaceObjectSaga(user.uid);
+      const faceId = yield getNewFaceId(user.uid);
       const idToken: string = yield user.getIdToken();
       // Generate Face.
       const response: Response = yield fetch(

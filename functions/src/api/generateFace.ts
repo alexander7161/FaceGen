@@ -1,8 +1,14 @@
+import { Request, Response } from "express";
+import { firestore } from "firebase-admin";
 const { PubSub } = require("@google-cloud/pubsub");
+
 const pubsub = new PubSub();
 
-import { Request, Response } from "express";
-
+/**
+ * Generate Face API function.
+ * Requires a FaceID.
+ * Publishes message in generate-face topic.
+ */
 const generateFace = async (req: Request, res: Response) => {
   const body = JSON.parse(req.body);
   if (!body.faceId) {
@@ -15,17 +21,22 @@ const generateFace = async (req: Request, res: Response) => {
   }
   const userId = res.locals.user.uid;
   const faceId = body.faceId;
+  const faceRef = `users/${userId}/faces/${faceId}`;
 
   const topic = pubsub.topic("generate-face");
 
-  const messageBuffer = Buffer.from(`users/${userId}/faces/${faceId}`, "utf8");
+  const messageBuffer = Buffer.from(faceRef, "utf8");
 
+  // Flags to send to styleGAN generator.
   const flags = {
-    // origin: "nodejs-sample",
-    // username: "gcp"
+    // seed: 1
   };
 
   await topic.publish(messageBuffer, flags);
+  await firestore().doc(faceRef).set({
+    timeCreated: firestore.FieldValue.serverTimestamp(),
+    complete: false,
+  });
   return "OK";
 };
 

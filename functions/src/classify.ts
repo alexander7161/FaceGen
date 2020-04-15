@@ -28,11 +28,15 @@ const saveLabelsToFirestore = async (ref: string, labels: string[]) => {
   await faceRef.set({ labels, labelsLoading: false }, { merge: true });
 };
 
+/**
+ * Function to classify a generated face using CNN.
+ * @param message from google Pub/Sub label-face topic.
+ */
 const classify = async (message: Message) => {
   const firestoreFaceRef = Buffer.from(message.data, "base64").toString();
   const [model] = await Promise.all([
     loadModel(),
-    getFaceImage(firestoreFaceRef)
+    getFaceImage(firestoreFaceRef),
   ]);
 
   const image = await readFile(facePath);
