@@ -1,4 +1,6 @@
-https://github.com/pfnet-research/chainer-stylegan
+Uses https://github.com/pfnet-research/chainer-stylegan
+
+Triggered by Google Pub/Sub generate-face topic.
 
 Deploy:
 

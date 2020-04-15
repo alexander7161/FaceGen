@@ -1,3 +1,5 @@
+# From https://github.com/pfnet-research/chainer-stylegan
+
 from common.networks.component.rescale import upscale2x, downscale2x, blur
 from common.networks.component.scale import Scale
 from common.networks.component.normalization.adain import AdaIN
