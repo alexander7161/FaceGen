@@ -16,7 +16,6 @@ import csv
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
-
 class Model():
     """Abstract Class for classifier models"""
 
@@ -28,7 +27,11 @@ class Model():
         self.callbacks = self.get_callbacks(save_checkpoints)
         self.model = self.get_model(outputs)
 
+    
     def get_run_folder(self):
+        """
+        Get folder to save or load data for current run name.
+        """
         run_folder = "runs/%s" % self.run_name
         try:
             os.mkdir(run_folder)
@@ -36,7 +39,11 @@ class Model():
             pass
         return run_folder
 
+ 
     def get_checkpoint_folder(self):
+        """
+        Get folder to save or load checkpoints.
+        """
         return self.get_run_folder() + "/checkpoints/cp.ckpt"
 
     def get_callbacks(self, save_checkpoints):
@@ -59,7 +66,10 @@ class Model():
         pass
 
     def fit(self, train_generator, validation_generator, columns, epochs=30, verbose=True):
-        """Trains the model"""
+        """
+        Trains the model
+        With verbose mode will save
+        """
         self.columns = columns
         STEP_SIZE_TRAIN = train_generator.n//train_generator.batch_size
         STEP_SIZE_VALID = validation_generator.n//validation_generator.batch_size
@@ -126,10 +136,14 @@ class Model():
             plt.show()
 
     def evaluate(self, test_generator, file_name=None, save_to_File=True):
+        """
+        Perform evaluation and get accuracy score for an input test generator.
+        """
         test_generator.reset()
 
         evaluation = self.model.evaluate(
             test_generator, verbose=0)
+
         if save_to_File:
             if file_name is None:
                 with open("%s/accuracy.txt" % self.get_run_folder(), 'w') as file:
@@ -183,12 +197,18 @@ class Model():
         return genderCf, ageCf
 
     def load_weights(self):
+        """
+        Load checkpoint weights for model.
+        """
         try:
             self.model.load_weights(self.get_checkpoint_folder())
         except:
             print("No checkpoint found")
 
     def save(self):
+        """
+        Save model as SavedModel.
+        """
         try:
             os.mkdir(self.get_run_folder())
             self.model.save(self.get_run_folder()+'/model')
@@ -196,6 +216,9 @@ class Model():
             self.model.save(self.get_run_folder() + '/model')
 
     def predict(self,filename, columns=["gender","senior", "adult", "child"]):
+        """
+        Make a prediction from an image file input.
+        """
         np_image = Image.open(filename)
         np_image = np.array(np_image).astype('float32')/255
         np_image = transform.resize(np_image, (IMG_WIDTH, IMG_HEIGHT, 3))

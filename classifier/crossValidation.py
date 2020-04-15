@@ -1,9 +1,14 @@
+from os import makedirs
 from crossValClass import CrossVal
 from argparse import ArgumentParser
 from multiclass_model import MulticlassCNNOptimisedModel
 from datetime import datetime
 import sys
 from models import get_model
+
+"""
+Script for performing K-fold cross validation.
+"""
 
 parser = ArgumentParser()
 parser.add_argument('--epochs', '-e', dest='epochs',
@@ -17,12 +22,17 @@ parser.add_argument('--m', '-m', dest='model',
                     help='declare what model to use.')
 parser.add_argument('--batchsize', dest='batch_size',
                     type=int, default=32,
-                    help='Should use binary classifier and label to classify.')
+                    help='Batch size for model to use.')
+parser.add_argument('--folds', '-f', dest='folds',
+                    type=int, default=10,
+                    help='K-folds to train (default: 10).')
 
 args = parser.parse_args()
 
+# Get the model.
 model = get_model(args.model, args.run_name)
 
+# Create crossval instance.
 crossValidation = CrossVal()
 
 if args.run_name is not None:
@@ -37,8 +47,12 @@ def get_run_folder():
 
 # self made Kfold cross validation.
 crossValMeanAccuracy, crossValStD = crossValidation.trainTestSplit(
-    classifier=type(model),run_name=run_name, epochs=args.epochs)
-from os import makedirs
+    classifier=type(model),
+    run_name=run_name,
+    epochs=args.epochs,
+    folds=args.folds
+)
+
 try:
     makedirs(get_run_folder())
 except:

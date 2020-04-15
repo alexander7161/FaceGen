@@ -15,14 +15,25 @@ admin.initializeApp();
 
 const storageBucket = admin.storage().bucket("facegen-fc9de.appspot.com");
 
+/**
+ * Load classifier model from frontend.
+ */
 const loadModel = () =>
   tf.loadLayersModel("https://facegen-fc9de.web.app/tfjs/model.json");
 
+/**
+ * Download face image from google Cloud Storage.
+ * @param faceRef
+ */
 const getFaceImage = async (faceRef: string) => {
   const pathReference = storageBucket.file(faceRef + ".jpg");
   await pathReference.download({ destination: facePath });
 };
-
+/**
+ * Saves labels to face in database.
+ * @param ref face ref in firestore
+ * @param labels string array of labels.
+ */
 const saveLabelsToFirestore = async (ref: string, labels: string[]) => {
   const faceRef = admin.firestore().doc(ref);
   await faceRef.set({ labels, labelsLoading: false }, { merge: true });
@@ -34,13 +45,14 @@ const saveLabelsToFirestore = async (ref: string, labels: string[]) => {
  */
 const classify = async (message: Message) => {
   const firestoreFaceRef = Buffer.from(message.data, "base64").toString();
+  // Download model and download face image concurrently.
   const [model] = await Promise.all([
     loadModel(),
     getFaceImage(firestoreFaceRef),
   ]);
-
+  // Load image from file.
   const image = await readFile(facePath);
-
+  // Load image to tensor and adapt to model input.
   const imgTensor = tf.node
     .decodeImage(image)
     .resizeNearestNeighbor([150, 150])
@@ -48,12 +60,16 @@ const classify = async (message: Message) => {
     .toFloat();
 
   const result = model.predict(imgTensor);
+
+  // Convert to float.
   const predictions = await (result as tf.Tensor<tf.Rank>)
     .asType("float32")
     .data();
+  // Prediction classes
   const classes = ["gender", "senior", "adult", "child"];
-
+  // First bit is gender.
   const gender = predictions[0] === 1 ? "female" : "male";
+  // Take largest of remaining bits as age.
   const ageIndex = await tf
     .argMax(predictions.slice(1, predictions.length))
     .data();

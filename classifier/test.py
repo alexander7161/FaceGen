@@ -1,6 +1,12 @@
 from argparse import ArgumentParser
 from datasets import get_testing_data
 from models import get_model
+from evaluate_model import evaluate_model
+
+"""
+Test a model.
+evaluate against training datasets.
+"""
 
 parser = ArgumentParser()
 parser.add_argument('--runname', '-n', dest='run_name',
@@ -15,17 +21,11 @@ parser.add_argument('--dataset', '-d', dest='dataset',
 
 args = parser.parse_args()
 
+# Get Model.
 model = get_model(args.model, args.run_name)
 
 # Try to load model weights from run_name.
 model.load_weights()
 
-datasets = ["ffhq", "ffhqgenerated", "overall"]
-
-for dataset in datasets:
-    test_generator, columns = get_testing_data(dataset)
-    evaluation = model.evaluate(test_generator, dataset)
-    print(evaluation)
-    genderCf, ageCf = model.confusion_matrix(test_generator, dataset)
-    print(genderCf)
-    print(ageCf)
+# Validate model on training datasets.
+evaluate_model(model)
