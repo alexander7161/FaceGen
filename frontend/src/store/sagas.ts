@@ -1,6 +1,6 @@
 import { fork } from "redux-saga/effects";
-import UserSagas from "./user/sagas";
-import FacesSagas from "./faces/sagas";
+import UserSagas from "./user/sagas/index";
+import FacesSagas from "./faces/sagas/index";
 import GeneratorSagas from "./generator/sagas";
 import ClassifierSagas from "./classifier/sagas";
 

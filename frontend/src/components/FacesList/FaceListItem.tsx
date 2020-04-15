@@ -4,7 +4,7 @@ import styled from "styled-components";
 import useFirebaseFile from "../../hooks/useFirebaseFile";
 import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-import ImageContainer from "./components/ImageContainer";
+import ImageContainer from "./components/ImageContainer/index";
 import FaceMenu from "./components/FaceMenu";
 import LabelContainer from "./components/LabelContainer";
 

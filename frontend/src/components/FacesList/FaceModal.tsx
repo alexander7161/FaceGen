@@ -2,7 +2,7 @@ import React from "react";
 import { Typography } from "@material-ui/core";
 import LabelContainer from "./components/LabelContainer";
 import FaceMenu from "./components/FaceMenu";
-import ImageContainer from "./components/ImageContainer";
+import ImageContainer from "./components/ImageContainer/index";
 import useFirebaseFile from "../../hooks/useFirebaseFile";
 import styled from "styled-components";
 

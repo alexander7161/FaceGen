@@ -1,5 +1,5 @@
 import React from "react";
-import Faces from "../components/FacesList/FacesList";
+import Faces from "../components/FacesList/index";
 import GenerateFaceButton from "../components/GenerateFaceButton";
 import { Container } from "@material-ui/core";
 import styled from "styled-components";
