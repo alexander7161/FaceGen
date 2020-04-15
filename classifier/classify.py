@@ -1,5 +1,9 @@
 from multiclass_model import MulticlassMultiLabelModel
 
+"""
+Classify a single file.
+"""
+
 parser = ArgumentParser()
 parser.add_argument('--runname', '-n', dest='run_name',
                     type=str,

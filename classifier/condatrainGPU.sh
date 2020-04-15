@@ -1,4 +1,5 @@
-#!/bin/bash -l                                                                                    
+#!/bin/bash -l
+# https://rosalind.kcl.ac.uk/hpc/running_jobs/
 #SBATCH --output=/scratch/users/%u/%j.out
 #SBATCH --job-name=trainGPU
 #SBATCH --gres=gpu

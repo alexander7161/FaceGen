@@ -1,6 +1,9 @@
 from binary_model import BinaryModel
 from multiclass_model import MulticlassCNNModel, MulticlassNNModel, MulticlassCNNDropoutModel, MulticlassCNNReluActivationDropoutModel, CNN6LayerModel, CNN4LayerModel, VGGLikeModel
 
+"""
+Get model by name.
+"""
 def get_model(model, run_name):
     if model == "binary":
         return BinaryModel(run_name=run_name)

@@ -26,7 +26,7 @@ class CrossVal(object):
         return splits
 
     def getSplit(self, i, splits):
-            # Copy folds to temporary variable.
+        # Copy folds to temporary variable.
         splitsCopy = splits[:]
         # Take the ith fold as test data.
         test = splitsCopy[i]
@@ -81,6 +81,7 @@ class CrossVal(object):
         return accuracy
 
     # Perfoms K-fold cross validation on the provided data and classifier.
+    # Returns accuracy and standard deviation of accuracies.
     def trainTestSplit(self, classifier, run_name, epochs=30, folds=10):
         ffhq_data, columns = load_csv("./face_data/age_gender/labels.csv")
 
@@ -90,7 +91,7 @@ class CrossVal(object):
         splits = self.createSplits(shuffledData, folds)
 
         # Collect accuracies for each fold.
-        accuracies = [self.getAccuracy(classifier, i, splits, columns, epochs,"%s/%d"% (run_name,i))
+        accuracies = [self.getAccuracy(classifier, i, splits, columns, epochs, "%s/%d" % (run_name, i))
                       for i in range(folds)]
 
         # Compute mean accuracy.
