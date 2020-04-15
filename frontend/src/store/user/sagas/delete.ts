@@ -6,11 +6,15 @@ import { deleteUser, signOut, signInWithGoogle } from "..";
 import { facesSelector } from "../../faces/selectors";
 import firebase from "../../../fbConfig";
 
+/**
+ * Delete current user saga
+ * Deletes all faces generated and userdata.
+ *
+ * User must wait to delete if there is currently a face being generated.
+ */
 function* deleteUserSaga() {
   const faces: GeneratedFaceData[] | null = yield select(facesSelector);
   if (faces) {
-    const dateNow = new Date();
-    dateNow.setMinutes(dateNow.getMinutes() - 5);
     const notCompleteAndNotOld = faces.filter((f) => !f.complete);
     if (notCompleteAndNotOld.length > 0) {
       console.error("wait for jobs to finish");

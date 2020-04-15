@@ -1,6 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import admin = require("firebase-admin");
 
+/**
+ * Middleware to authenticate a users ID Token.
+ * If successful user is stored in local.
+ * Else a 401 error is sent.
+ */
 export default function firebaseAuthMiddleware(
   req: Request,
   res: Response,
@@ -12,11 +17,11 @@ export default function firebaseAuthMiddleware(
     admin
       .auth()
       .verifyIdToken(token[1])
-      .then(decodedToken => {
+      .then((decodedToken) => {
         res.locals.user = decodedToken;
         next();
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
         res.sendStatus(401);
       });

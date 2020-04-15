@@ -3,21 +3,22 @@ import { generateFace, generateFaceSuccess, generateFaceFailure } from ".";
 import rsf from "../rsf";
 import * as firebase from "firebase/app";
 
-const createFaceObjectSaga = async (userId: string) => {
-  const faceRef = await firebase
-    .firestore()
-    .collection(`users/${userId}/faces`)
-    .add({
-      timeCreated: firebase.firestore.FieldValue.serverTimestamp(),
-      complete: false,
-    });
-  return faceRef.id;
-};
+/**
+ * Function to get a new face id for a given user.
+ * @param userId
+ */
+const getNewFaceId = (userId: string) =>
+  firebase.firestore().collection(`users/${userId}/faces`).doc().id;
 
+/**
+ * Saga to initiate face generation.
+ *
+ */
 function* generateFaceSaga() {
   try {
     let user: firebase.User | null = firebase.auth().currentUser;
     if (!user) {
+      // If user not signed in, sign in anonymously.
       try {
         user = yield call(rsf.auth.signInAnonymously);
       } catch (error) {
@@ -26,8 +27,9 @@ function* generateFaceSaga() {
     }
     user = firebase.auth().currentUser;
     if (user) {
-      const faceId = yield createFaceObjectSaga(user.uid);
+      const faceId = yield getNewFaceId(user.uid);
       const idToken: string = yield user.getIdToken();
+      // Generate Face.
       const response: Response = yield fetch(
         "https://us-central1-facegen-fc9de.cloudfunctions.net/api/generateFace",
         {
@@ -36,10 +38,10 @@ function* generateFaceSaga() {
           body: JSON.stringify({ faceId }),
         }
       );
-      const text: string = yield response.text();
       if (response.ok) {
         yield put(generateFaceSuccess());
       } else {
+        const text: string = yield response.text();
         yield put(generateFaceFailure(new Error(text)));
       }
     } else {
@@ -52,5 +54,6 @@ function* generateFaceSaga() {
 }
 
 export default function* root() {
+  // Prevent generating more than one face per 5 seconds.
   yield debounce(5000, generateFace, generateFaceSaga);
 }

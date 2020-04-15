@@ -1,19 +1,11 @@
 import { takeEvery, call, put } from "redux-saga/effects";
 import rsf from "../../rsf";
-import { signIn, signInAnonymously, signInWithGoogle, setUser } from "..";
-import { push } from "connected-react-router";
+import { signInAnonymously, signInWithGoogle, setUser } from "..";
 import * as firebase from "firebase/app";
 
-function* signInSaga({
-  payload: { email, password },
-}: ReturnType<typeof signIn>) {
-  try {
-    yield call(rsf.auth.signInWithEmailAndPassword, email, password);
-  } catch (error) {
-    console.log(error);
-  }
-}
-
+/**
+ * Saga to sign in anonymously.
+ */
 function* signInAnonymouslySaga() {
   try {
     yield call(rsf.auth.signInAnonymously);
@@ -22,6 +14,9 @@ function* signInAnonymouslySaga() {
   }
 }
 
+/**
+ * Saga to sign in with google Oauth.
+ */
 function* signInWithGoogleSaga() {
   const provider = new firebase.auth.GoogleAuthProvider();
   const user: firebase.User | null = firebase.auth().currentUser;
@@ -30,18 +25,12 @@ function* signInWithGoogleSaga() {
       provider
     );
     yield put(setUser(result.user));
-    yield put(push("/"));
-    console.log(result);
   } else {
-    const result: firebase.auth.UserCredential = yield firebase
-      .auth()
-      .signInWithPopup(provider);
-    console.log(result);
+    yield firebase.auth().signInWithPopup(provider);
   }
 }
 
 export default function* root() {
-  yield takeEvery(signIn, signInSaga);
   yield takeEvery(signInAnonymously, signInAnonymouslySaga);
   yield takeEvery(signInWithGoogle, signInWithGoogleSaga);
 }

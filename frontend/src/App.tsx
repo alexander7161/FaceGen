@@ -7,11 +7,14 @@ import { CssBaseline } from "@material-ui/core";
 import Appbar from "./components/Appbar";
 import Pages from "./pages";
 
+/**
+ * App root.
+ */
 const App: React.FC = () => {
   return (
     <Provider store={store}>
-      <CssBaseline />
       <ConnectedRouter history={history}>
+        <CssBaseline />
         <Appbar />
         <Pages />
       </ConnectedRouter>
