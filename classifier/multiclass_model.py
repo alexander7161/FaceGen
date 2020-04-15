@@ -97,8 +97,8 @@ class MulticlassCNNDropoutModel(Model):
 
 class MulticlassCNNReluActivationDropoutModel(Model):
     """A CNN classifier that classifies multiple labels and multiple classes.
-        With Dropout and relu activation functions.
-        Model set out in Design Chapter."""
+        With Dropout and ReLU activation functions.
+        Model set out in Design Chapter with 3 convolutional layers."""
 
     def __init__(self, outputs, run_name=None, save_checkpoints=True):
         super().__init__(outputs, run_name, save_checkpoints)
