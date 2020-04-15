@@ -8,7 +8,8 @@ const app = express();
 // Only allow cross origin requests from frontend.
 app.use(
   cors({
-    origin: true,
+    origin: ["https://facegen-fc9de.web.app/", "https://facegen-fc9de.web.app"],
+    optionsSuccessStatus: 200,
   })
 );
 
