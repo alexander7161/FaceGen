@@ -1,7 +1,7 @@
 from multiclass_model import MulticlassMultiLabelModel
 
 """
-Classify a single file.
+Classify a single image file from the filesystem.
 """
 
 parser = ArgumentParser()
@@ -11,6 +11,9 @@ parser.add_argument('--runname', '-n', dest='run_name',
 parser.add_argument('--file', '-f', dest='file',
                     type=str, default="./face_data/female_senior/users_reHt5vV4soc2BtN5cYUJpSgUClk1_faces_4kbr2K6XTV8UmNXvEDkF.jpg",
                     help='File to test')
+parser.add_argument('--m', '-m', dest='model',
+                    type=str, default="cnn",
+                    help='declare what model to use.')
 
 
 args = parser.parse_args()
