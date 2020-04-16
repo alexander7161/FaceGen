@@ -6,6 +6,10 @@ import os = require("os");
 import path = require("path");
 import util = require("util");
 
+/**
+ * Classifies image from Google Pub/Sub topic label-face.
+ */
+
 const readFile = util.promisify(fs.readFile);
 
 const tmpdir = os.tmpdir();

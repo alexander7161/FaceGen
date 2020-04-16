@@ -6,6 +6,10 @@ from constants import IMG_HEIGHT, IMG_WIDTH
 from model import Model
 import pandas as pd
 
+"""
+Models that classify Multiple classes and multiple labels.
+"""
+
 
 class MulticlassNNModel(Model):
     """A Neural Network classifier that classifies multiple labels and multiple classes."""
@@ -129,6 +133,7 @@ class MulticlassCNNReluActivationDropoutModel(Model):
 
         return model
 
+
 class CNN6LayerModel(Model):
     """A CNN classifier that classifies multiple labels and multiple classes.
         With Dropout and relu activation and 6 convolutional layers."""
@@ -170,6 +175,7 @@ class CNN6LayerModel(Model):
 
         return model
 
+
 class CNN4LayerModel(Model):
     """A CNN classifier that classifies multiple labels and multiple classes.
         With Dropout and relu activation and 4 convolutional layers."""
@@ -206,6 +212,7 @@ class CNN4LayerModel(Model):
 
         return model
 
+
 class VGGLikeModel(Model):
     """A CNN classifier that classifies multiple labels and multiple classes.
         With Dropout and relu activation.
@@ -219,7 +226,8 @@ class VGGLikeModel(Model):
         Activation layers added
         """
         model = Sequential([
-            Conv2D(32, (3, 3), activation='relu', input_shape=(IMG_HEIGHT, IMG_WIDTH, 3)),
+            Conv2D(32, (3, 3), activation='relu',
+                   input_shape=(IMG_HEIGHT, IMG_WIDTH, 3)),
             Conv2D(32, (3, 3), activation='relu'),
             MaxPooling2D(pool_size=(2, 2)),
             Dropout(0.25),
@@ -237,4 +245,3 @@ class VGGLikeModel(Model):
         model.compile("adam", loss='binary_crossentropy', metrics=['accuracy'])
 
         return model
-
