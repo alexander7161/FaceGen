@@ -37,7 +37,7 @@ Choose the number of training epochs with:
 python3 train.py -e 30
 ```
 
-Run name will default to the current data. Can be set with:
+Run name will default to the current date. Can be set with:
 
 ```
 python3 train.py -n test
