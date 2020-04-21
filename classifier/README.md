@@ -17,6 +17,12 @@ The models available are:
 
 The default model is reludropout
 
+## Dataset
+
+Training images can be obtained from https://github.com/NVlabs/ffhq-dataset 
+
+Download Images1024x1024 folders: 65000 - 69000 to `face_data/age_gender`
+
 ## Training
 
 To train the model:
