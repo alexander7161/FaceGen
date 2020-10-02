@@ -1,4 +1,4 @@
-import * as tf from "@tensorflow/tfjs-node";
+import tf = require("@tensorflow/tfjs-node");
 import { Message } from "firebase-functions/lib/providers/pubsub";
 import admin = require("firebase-admin");
 import fs = require("fs");
@@ -20,10 +20,10 @@ admin.initializeApp();
 const storageBucket = admin.storage().bucket("facegen-fc9de.appspot.com");
 
 /**
- * Load classifier model from frontend.
+ * Load classifier model.
  */
 const loadModel = () =>
-  tf.loadLayersModel("https://facegen-fc9de.web.app/tfjs/model.json");
+  tf.loadLayersModel(`file://${__dirname}/model/model.json`);
 
 /**
  * Download face image from google Cloud Storage.
@@ -44,42 +44,61 @@ const saveLabelsToFirestore = async (ref: string, labels: string[]) => {
 };
 
 /**
+ * Saves error to face in database.
+ * @param ref face ref in firestore
+ * @param error
+ */
+const saveError = async (ref: string, error: Error) => {
+  const faceRef = admin.firestore().doc(ref);
+  await faceRef.set(
+    { labelError: error.message, labelsLoading: false },
+    { merge: true }
+  );
+};
+
+/**
  * Function to classify a generated face using CNN.
  * @param message from google Pub/Sub label-face topic.
  */
 const classify = async (message: Message) => {
   const firestoreFaceRef = Buffer.from(message.data, "base64").toString();
-  // Download model and download face image concurrently.
-  const [model] = await Promise.all([
-    loadModel(),
-    getFaceImage(firestoreFaceRef),
-  ]);
-  // Load image from file.
-  const image = await readFile(facePath);
-  // Load image to tensor and adapt to model input.
-  const imgTensor = tf.node
-    .decodeImage(image)
-    .resizeNearestNeighbor([150, 150])
-    .expandDims()
-    .toFloat();
+  console.log(firestoreFaceRef);
+  try {
+    // Download model and download face image concurrently.
+    const [model] = await Promise.all([
+      loadModel(),
+      getFaceImage(firestoreFaceRef),
+    ]);
+    // Load image from file.
+    const image = await readFile(facePath);
+    // Load image to tensor and adapt to model input.
+    const imgTensor = tf.node
+      .decodeImage(image)
+      .resizeNearestNeighbor([150, 150])
+      .expandDims()
+      .toFloat();
 
-  const result = model.predict(imgTensor);
+    const result = model.predict(imgTensor);
 
-  // Convert to float.
-  const predictions = await (result as tf.Tensor<tf.Rank>)
-    .asType("float32")
-    .data();
-  // Prediction classes
-  const classes = ["gender", "senior", "adult", "child"];
-  // First bit is gender.
-  const gender = predictions[0] === 1 ? "female" : "male";
-  // Take largest of remaining bits as age.
-  const ageIndex = await tf
-    .argMax(predictions.slice(1, predictions.length))
-    .data();
-  const age = classes[ageIndex[0] + 1];
-  const labels = [gender, age];
-  await saveLabelsToFirestore(firestoreFaceRef, labels);
+    // Convert to float.
+    const predictions = await (result as tf.Tensor<tf.Rank>)
+      .asType("float32")
+      .data();
+    // Prediction classes
+    const classes = ["gender", "senior", "adult", "child"];
+    // First bit is gender.
+    const gender = predictions[0] === 1 ? "female" : "male";
+    // Take largest of remaining bits as age.
+    const ageIndex = await tf
+      .argMax(predictions.slice(1, predictions.length))
+      .data();
+    const age = classes[ageIndex[0] + 1];
+    const labels = [gender, age];
+    await saveLabelsToFirestore(firestoreFaceRef, labels);
+  } catch (e) {
+    console.error(e);
+    await saveError(firestoreFaceRef, e);
+  }
 };
 
 export default classify;
